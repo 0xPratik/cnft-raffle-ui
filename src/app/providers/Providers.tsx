@@ -19,6 +19,8 @@ export function Providers({ children }: { children: React.ReactNode }) {
     ? (process.env.NEXT_PUBLIC_ENV as EnvCluster)
     : "devnet";
 
+  console.log("process.env.NEXT_PUBLIC_ENV", process.env.NEXT_PUBLIC_ENV);
+
   const [queryClient] = React.useState(
     () =>
       new QueryClient({

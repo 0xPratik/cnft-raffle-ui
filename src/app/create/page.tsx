@@ -15,7 +15,6 @@ import {
 import { getUnixTimeStamp } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import dayjs from "dayjs";
-import { RaffleCard } from "@/components/RaffleCard";
 import clsx from "clsx";
 import { useNftDataByOwner } from "@/hooks/useNftDataByOwner";
 import { SelectImage } from "@/components/SelectImage";
@@ -35,6 +34,7 @@ import { format } from "date-fns";
 import RaffleImage from "@/components/ui/RaffleImage";
 import { useQueryClient } from "@tanstack/react-query";
 import { Skeleton } from "@/components/ui/skeleton";
+import { useCnftDataByOwner } from "@/hooks/useCnftDataByOwner";
 
 enum CreateStates {
   Step1,
@@ -50,7 +50,7 @@ export default function Create() {
     ({ useAnchorWallet } = require("@jup-ag/wallet-adapter"));
   }
   const anchorWallet = useAnchorWallet();
-  const { data, isPending, isError } = useNftDataByOwner();
+  const { data, isPending, isError } = useCnftDataByOwner();
   const [selectedToken, setSelectedToken] = useState<TokenType>(SOL);
   const [createState, setCreateState] = useState<CreateStates>(
     CreateStates.Step1
@@ -121,6 +121,8 @@ export default function Create() {
         anchorWallet as NodeWallet,
         new anchor.BN(unixTimeStamp),
         new anchor.BN(price),
+        // keeping this as 100 to fix the error but will need to get this from the user
+        new anchor.BN(100),
         ticketMint
       );
 
@@ -134,7 +136,8 @@ export default function Create() {
         selectedTokens.map((token) =>
           addRewardIx(
             anchorWallet as NodeWallet,
-            new anchor.web3.PublicKey(token.id)
+            token.id,
+            new anchor.web3.PublicKey(token.compression.tree)
           )
         )
       );
@@ -255,51 +258,44 @@ export default function Create() {
                 </>
               )}
               {data &&
-                data?.result.items
-                  .filter(
-                    (item) =>
-                      item.compression.compressed === false &&
-                      item.ownership.frozen === false &&
-                      item.ownership.delegated === false
-                  )
-                  .map((item, index) => {
-                    return (
-                      <div
-                        key={index}
-                        onClick={() => {
-                          console.log("ITEM", item);
-                          if (selectedTokens.includes(item)) {
-                            const selTokens = selectedTokens;
-                            console.log("selTokens", selTokens);
-                            selTokens.splice(selTokens.indexOf(item), 1);
-                            setSelectedTokens([...selTokens]);
-                            // setRaffleData({
-                            //   ...raffleData,
-                            //   assets: raffleData.assets.filter(
-                            //     (asset) => asset.reward.toString() !== item.id
-                            //   ),
-                            // });
-                          } else {
-                            setSelectedTokens([...selectedTokens, item]);
-                            // setRaffleData({
-                            //   ...raffleData,
-                            //   assets: [
-                            //     ...raffleData.assets,
-                            //     item.id,
-                            //   ],
-                            // });
-                          }
-                        }}
-                        className={clsx(
-                          "overflow-hidden w-full h-[160px] object-cover rounded-md flex items-center justify-center transition-colors bg-gray-100 cursor-pointer hover:bg-gray-300",
-                          selectedTokens.includes(item) &&
-                            "border-4 border-indigo-400"
-                        )}
-                      >
-                        <SelectImage imageUri={item.content.links.image} />
-                      </div>
-                    );
-                  })}
+                data.map((item, index) => {
+                  return (
+                    <div
+                      key={index}
+                      onClick={() => {
+                        console.log("ITEM", item);
+                        if (selectedTokens.includes(item)) {
+                          const selTokens = selectedTokens;
+                          console.log("selTokens", selTokens);
+                          selTokens.splice(selTokens.indexOf(item), 1);
+                          setSelectedTokens([...selTokens]);
+                          // setRaffleData({
+                          //   ...raffleData,
+                          //   assets: raffleData.assets.filter(
+                          //     (asset) => asset.reward.toString() !== item.id
+                          //   ),
+                          // });
+                        } else {
+                          setSelectedTokens([...selectedTokens, item]);
+                          // setRaffleData({
+                          //   ...raffleData,
+                          //   assets: [
+                          //     ...raffleData.assets,
+                          //     item.id,
+                          //   ],
+                          // });
+                        }
+                      }}
+                      className={clsx(
+                        "overflow-hidden w-full h-[160px] object-cover rounded-md flex items-center justify-center transition-colors bg-gray-100 cursor-pointer hover:bg-gray-300",
+                        selectedTokens.includes(item) &&
+                          "border-4 border-indigo-400"
+                      )}
+                    >
+                      <SelectImage imageUri={item.content.links.image} />
+                    </div>
+                  );
+                })}
               {isError && (
                 <div className="flex items-center justify-center w-full h-full">
                   Error

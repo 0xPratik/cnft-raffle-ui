@@ -11,12 +11,12 @@ import {
 
 import * as bs58 from "bs58";
 
-export function loadWalletKey(keypairFile: string): Keypair {
-  const fs = require("fs");
-  return Keypair.fromSecretKey(
-    new Uint8Array(JSON.parse(fs.readFileSync(keypairFile).toString()))
-  );
-}
+// export function loadWalletKey(keypairFile: string): Keypair {
+//   const fs = require("fs");
+//   return Keypair.fromSecretKey(
+//     new Uint8Array(JSON.parse(fs.readFileSync(keypairFile).toString()))
+//   );
+// }
 
 export function decode(stuff: string) {
   return bufferToArray(bs58.decode(stuff));

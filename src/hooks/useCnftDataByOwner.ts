@@ -3,7 +3,7 @@ import { RPC } from "@/lib/constants";
 import axios from "axios";
 import { Item, NFTResponse } from "@/types";
 
-export function useNftDataByOwner() {
+export function useCnftDataByOwner() {
   let useAnchorWallet;
   if (typeof window !== "undefined") {
     ({ useAnchorWallet } = require("@jup-ag/wallet-adapter"));
@@ -12,13 +12,13 @@ export function useNftDataByOwner() {
   const walletAddress = wallet?.publicKey.toString();
   const { data, isSuccess, isError, isPending, error, status } = useQuery({
     queryKey: [`nftDataByOwner ${walletAddress}`],
-    queryFn: () => getNftDataByOwner(walletAddress),
+    queryFn: () => getCnftDataByOwner(walletAddress),
   });
 
   return { data, isSuccess, isError, isPending, error, status };
 }
 
-async function getNftDataByOwner(walletAddress: string | undefined) {
+async function getCnftDataByOwner(walletAddress: string | undefined) {
   if (!walletAddress) {
     throw new Error("Wallet address is required to fetch data");
   }
@@ -38,7 +38,7 @@ async function getNftDataByOwner(walletAddress: string | undefined) {
     const data = res.data as NFTResponse;
     const dataWithoutcnfts = data.result.items.filter(
       (item) =>
-        item.compression.compressed === false &&
+        item.compression.compressed === true &&
         item.ownership.frozen === false &&
         item.ownership.delegated === false
     );

@@ -132,11 +132,19 @@ export const createRaffleIx = async (
   }
 };
 
+const getTreeAuthority = (tree: anchor.web3.PublicKey) => {
+  const [treeAuthority, _bump] = anchor.web3.PublicKey.findProgramAddressSync(
+    [tree.toBuffer()],
+    toWeb3JsPublicKey(MPL_BUBBLEGUM_PROGRAM_ID)
+  );
+
+  return treeAuthority;
+};
+
 export const addRewardIx = async (
   wallet: anchor.Wallet,
   assetId: string,
-  treeAddress: anchor.web3.PublicKey,
-  treeAuthority: anchor.web3.PublicKey
+  treeAddress: anchor.web3.PublicKey
 ) => {
   try {
     anchor.setProvider({
@@ -154,10 +162,20 @@ export const addRewardIx = async (
     if (rafflerAccount !== null && rafflerAccount?.noOfRaffles !== undefined) {
       idx = rafflerAccount?.noOfRaffles;
     }
-
+    const treeAuthority = getTreeAuthority(treeAddress);
     const [rafflePDAPubkey] = await findRafflePDA(wallet.publicKey, idx);
     const asset = await getAsset(assetId, RPC);
+    console.log("asset", asset);
+    console.log("RPC", RPC);
+    // sleep for 1 sec
+    const pauseExecution = async () => {
+      console.log("Pausing for 5 seconds...");
+      await new Promise((resolve) => setTimeout(resolve, 5000));
+      console.log("Resuming execution.");
+    };
+    await pauseExecution();
     const proof = await getAssetProof(assetId, RPC);
+    console.log("proof", proof);
     const root = decode(proof.root);
     const dataHash = decode(asset.compression.data_hash);
     const creatorHash = decode(asset.compression.creator_hash);

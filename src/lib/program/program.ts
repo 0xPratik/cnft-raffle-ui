@@ -3,6 +3,40 @@ export type CnftRaffle = {
   name: "cnft_raffle";
   instructions: [
     {
+      name: "createAdmin";
+      accounts: [
+        {
+          name: "authority";
+          isMut: true;
+          isSigner: true;
+        },
+        {
+          name: "adminAccount";
+          isMut: true;
+          isSigner: false;
+        },
+        {
+          name: "treasuryAccount";
+          isMut: false;
+          isSigner: false;
+          docs: [
+            "Should be a MultiSig Once we finalize which multisig then i can do a account owner check"
+          ];
+        },
+        {
+          name: "systemProgram";
+          isMut: false;
+          isSigner: false;
+        }
+      ];
+      args: [
+        {
+          name: "fee";
+          type: "u64";
+        }
+      ];
+    },
+    {
       name: "createRaffler";
       accounts: [
         {
@@ -626,6 +660,40 @@ export const IDL: CnftRaffle = {
   version: "0.1.0",
   name: "cnft_raffle",
   instructions: [
+    {
+      name: "createAdmin",
+      accounts: [
+        {
+          name: "authority",
+          isMut: true,
+          isSigner: true,
+        },
+        {
+          name: "adminAccount",
+          isMut: true,
+          isSigner: false,
+        },
+        {
+          name: "treasuryAccount",
+          isMut: false,
+          isSigner: false,
+          docs: [
+            "Should be a MultiSig Once we finalize which multisig then i can do a account owner check",
+          ],
+        },
+        {
+          name: "systemProgram",
+          isMut: false,
+          isSigner: false,
+        },
+      ],
+      args: [
+        {
+          name: "fee",
+          type: "u64",
+        },
+      ],
+    },
     {
       name: "createRaffler",
       accounts: [
