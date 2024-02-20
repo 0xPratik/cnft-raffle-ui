@@ -8,6 +8,14 @@ import {
   getAssociatedTokenAddress,
 } from "@solana/spl-token";
 import { getAdminPDA, getRaffler } from "./programFetch";
+import { getAsset, getAssetProof } from "./ReadApi";
+import { decode, mapProof } from "./ReadApi/utils";
+import { MPL_BUBBLEGUM_PROGRAM_ID } from "@metaplex-foundation/mpl-bubblegum";
+import {
+  SPL_ACCOUNT_COMPRESSION_PROGRAM_ID,
+  SPL_NOOP_PROGRAM_ID,
+} from "@solana/spl-account-compression";
+import { toWeb3JsPublicKey } from "@metaplex-foundation/umi-web3js-adapters";
 
 export const declareWinnerIx = async (raffle: anchor.web3.PublicKey) => {
   try {
@@ -64,6 +72,7 @@ export const createRaffleIx = async (
   wallet: anchor.Wallet,
   endDate: anchor.BN,
   ticketPrice: anchor.BN,
+  maxTickets: anchor.BN,
   ticketMint: anchor.web3.PublicKey
 ) => {
   try {
@@ -96,7 +105,7 @@ export const createRaffleIx = async (
     );
 
     const ix = await program?.methods
-      .createRaffle(endDate, ticketPrice)
+      .createRaffle(endDate, ticketPrice, maxTickets)
       .accounts({
         authority: wallet.publicKey,
         tokenProgram: TOKEN_PROGRAM_ID,
@@ -125,7 +134,9 @@ export const createRaffleIx = async (
 
 export const addRewardIx = async (
   wallet: anchor.Wallet,
-  rewardMint: anchor.web3.PublicKey
+  assetId: string,
+  treeAddress: anchor.web3.PublicKey,
+  treeAuthority: anchor.web3.PublicKey
 ) => {
   try {
     anchor.setProvider({
@@ -145,30 +156,28 @@ export const addRewardIx = async (
     }
 
     const [rafflePDAPubkey] = await findRafflePDA(wallet.publicKey, idx);
-
-    let walletATA = await getAssociatedTokenAddress(
-      rewardMint, // mint
-      wallet.publicKey // owner
-    );
-
-    let rewardATA = await getAssociatedTokenAddress(
-      rewardMint, // mint
-      rafflePDAPubkey, // owner
-      true
-    );
+    const asset = await getAsset(assetId, RPC);
+    const proof = await getAssetProof(assetId, RPC);
+    const root = decode(proof.root);
+    const dataHash = decode(asset.compression.data_hash);
+    const creatorHash = decode(asset.compression.creator_hash);
+    const nonce = new anchor.BN(asset.compression.leaf_id);
+    const index = asset.compression.leaf_id;
+    const proofPathAsAccounts = mapProof(proof);
 
     const ix = await program?.methods
-      .addReward()
+      .addReward(root, dataHash, creatorHash, nonce, index)
       .accounts({
         authority: wallet.publicKey,
-        associatedTokenProgram: ASSOCIATED_TOKEN_PROGRAM_ID,
         systemProgram: anchor.web3.SystemProgram.programId,
-        tokenProgram: TOKEN_PROGRAM_ID,
-        nftMint: rewardMint,
+        treeAuthority: treeAuthority,
+        merkleTree: treeAddress,
+        bubblegumProgram: toWeb3JsPublicKey(MPL_BUBBLEGUM_PROGRAM_ID),
+        logWrapper: SPL_NOOP_PROGRAM_ID,
+        compressionProgram: SPL_ACCOUNT_COMPRESSION_PROGRAM_ID,
         raffleAccount: rafflePDAPubkey,
-        authorityTokenAccount: walletATA,
-        escrowTokenAccount: rewardATA,
       })
+      .remainingAccounts(proofPathAsAccounts)
       .instruction();
 
     return ix;
@@ -279,8 +288,10 @@ export const raffleWithdrawIx = async (
 export const claimPrizeIx = async (
   wallet: anchor.Wallet,
   raffleAccount: anchor.web3.PublicKey,
-  nftMint: anchor.web3.PublicKey,
-  raffleCreator: anchor.web3.PublicKey
+  assetId: string,
+  raffleCreator: anchor.web3.PublicKey,
+  treeAddress: anchor.web3.PublicKey,
+  treeAuthority: anchor.web3.PublicKey
 ) => {
   anchor.setProvider({
     connection: new anchor.web3.Connection(RPC),
@@ -290,33 +301,32 @@ export const claimPrizeIx = async (
   const [rafflerAccount] = await findRafflerPDA(raffleCreator);
   const [ticketPDA] = await findTicketPDA(wallet.publicKey, raffleAccount);
 
-  const claimerTokenAccount = await getAssociatedTokenAddress(
-    nftMint, // mint
-    wallet.publicKey // owner
-  );
-
-  const escrowTokenAccount = await getAssociatedTokenAddress(
-    nftMint,
-    raffleAccount,
-    true
-  );
-
-  console.log("escrowTokenAccount", escrowTokenAccount);
+  const asset = await getAsset(assetId, RPC);
+  const proof = await getAssetProof(assetId, RPC);
+  const root = decode(proof.root);
+  const dataHash = decode(asset.compression.data_hash);
+  const creatorHash = decode(asset.compression.creator_hash);
+  const nonce = new anchor.BN(asset.compression.leaf_id);
+  const index = asset.compression.leaf_id;
+  const proofPathAsAccounts = mapProof(proof);
 
   const ix = await program?.methods
-    .claimPrize()
+    .claimPrize(root, dataHash, creatorHash, nonce, index)
     .accounts({
       associatedTokenProgram: ASSOCIATED_TOKEN_PROGRAM_ID,
       systemProgram: anchor.web3.SystemProgram.programId,
       tokenProgram: TOKEN_PROGRAM_ID,
       authority: wallet.publicKey,
       raffleAccount: raffleAccount,
-      nftMint: nftMint,
+      bubblegumProgram: toWeb3JsPublicKey(MPL_BUBBLEGUM_PROGRAM_ID),
+      logWrapper: SPL_NOOP_PROGRAM_ID,
+      compressionProgram: SPL_ACCOUNT_COMPRESSION_PROGRAM_ID,
       ticketAccount: ticketPDA,
       rafflerAccount: rafflerAccount,
-      claimerTokenAccount: claimerTokenAccount,
-      escrowTokenAccount: escrowTokenAccount,
+      merkleTree: treeAddress,
+      treeAuthority: treeAuthority,
     })
+    .remainingAccounts(proofPathAsAccounts)
     .instruction();
 
   return ix;

@@ -1,41 +1,7 @@
-export type Degen = {
+export type CnftRaffle = {
   version: "0.1.0";
-  name: "degen";
+  name: "cnft_raffle";
   instructions: [
-    {
-      name: "createAdmin";
-      accounts: [
-        {
-          name: "authority";
-          isMut: true;
-          isSigner: true;
-        },
-        {
-          name: "adminAccount";
-          isMut: true;
-          isSigner: false;
-        },
-        {
-          name: "treasuryAccount";
-          isMut: false;
-          isSigner: false;
-          docs: [
-            "Should be a MultiSig Once we finalize which multisig then i can do a account owner check"
-          ];
-        },
-        {
-          name: "systemProgram";
-          isMut: false;
-          isSigner: false;
-        }
-      ];
-      args: [
-        {
-          name: "fee";
-          type: "u64";
-        }
-      ];
-    },
     {
       name: "createRaffler";
       accounts: [
@@ -76,6 +42,11 @@ export type Degen = {
           isSigner: false;
         },
         {
+          name: "adminAccount";
+          isMut: true;
+          isSigner: false;
+        },
+        {
           name: "ticketMint";
           isMut: false;
           isSigner: false;
@@ -86,8 +57,8 @@ export type Degen = {
           isSigner: false;
         },
         {
-          name: "adminAccount";
-          isMut: true;
+          name: "systemProgram";
+          isMut: false;
           isSigner: false;
         },
         {
@@ -97,11 +68,6 @@ export type Degen = {
         },
         {
           name: "associatedTokenProgram";
-          isMut: false;
-          isSigner: false;
-        },
-        {
-          name: "systemProgram";
           isMut: false;
           isSigner: false;
         }
@@ -114,6 +80,176 @@ export type Degen = {
         {
           name: "price";
           type: "u64";
+        },
+        {
+          name: "maxTickets";
+          type: "u16";
+        }
+      ];
+    },
+    {
+      name: "addReward";
+      accounts: [
+        {
+          name: "authority";
+          isMut: true;
+          isSigner: true;
+        },
+        {
+          name: "raffleAccount";
+          isMut: true;
+          isSigner: false;
+        },
+        {
+          name: "treeAuthority";
+          isMut: false;
+          isSigner: false;
+        },
+        {
+          name: "merkleTree";
+          isMut: true;
+          isSigner: false;
+        },
+        {
+          name: "logWrapper";
+          isMut: false;
+          isSigner: false;
+        },
+        {
+          name: "compressionProgram";
+          isMut: false;
+          isSigner: false;
+        },
+        {
+          name: "bubblegumProgram";
+          isMut: false;
+          isSigner: false;
+        },
+        {
+          name: "systemProgram";
+          isMut: false;
+          isSigner: false;
+        }
+      ];
+      args: [
+        {
+          name: "root";
+          type: {
+            array: ["u8", 32];
+          };
+        },
+        {
+          name: "dataHash";
+          type: {
+            array: ["u8", 32];
+          };
+        },
+        {
+          name: "creatorHash";
+          type: {
+            array: ["u8", 32];
+          };
+        },
+        {
+          name: "nonce";
+          type: "u64";
+        },
+        {
+          name: "index";
+          type: "u32";
+        }
+      ];
+    },
+    {
+      name: "claimPrize";
+      accounts: [
+        {
+          name: "authority";
+          isMut: true;
+          isSigner: true;
+        },
+        {
+          name: "treeAuthority";
+          isMut: false;
+          isSigner: false;
+        },
+        {
+          name: "merkleTree";
+          isMut: true;
+          isSigner: false;
+        },
+        {
+          name: "rafflerAccount";
+          isMut: false;
+          isSigner: false;
+        },
+        {
+          name: "raffleAccount";
+          isMut: true;
+          isSigner: false;
+        },
+        {
+          name: "ticketAccount";
+          isMut: true;
+          isSigner: false;
+        },
+        {
+          name: "logWrapper";
+          isMut: false;
+          isSigner: false;
+        },
+        {
+          name: "compressionProgram";
+          isMut: false;
+          isSigner: false;
+        },
+        {
+          name: "bubblegumProgram";
+          isMut: false;
+          isSigner: false;
+        },
+        {
+          name: "systemProgram";
+          isMut: false;
+          isSigner: false;
+        },
+        {
+          name: "tokenProgram";
+          isMut: false;
+          isSigner: false;
+        },
+        {
+          name: "associatedTokenProgram";
+          isMut: false;
+          isSigner: false;
+        }
+      ];
+      args: [
+        {
+          name: "root";
+          type: {
+            array: ["u8", 32];
+          };
+        },
+        {
+          name: "dataHash";
+          type: {
+            array: ["u8", 32];
+          };
+        },
+        {
+          name: "creatorHash";
+          type: {
+            array: ["u8", 32];
+          };
+        },
+        {
+          name: "nonce";
+          type: "u64";
+        },
+        {
+          name: "index";
+          type: "u32";
         }
       ];
     },
@@ -169,78 +305,6 @@ export type Degen = {
       ];
     },
     {
-      name: "declareWinner";
-      accounts: [
-        {
-          name: "raffleAccount";
-          isMut: true;
-          isSigner: false;
-        },
-        {
-          name: "recentSlothashes";
-          isMut: false;
-          isSigner: false;
-        }
-      ];
-      args: [];
-    },
-    {
-      name: "claimPrize";
-      accounts: [
-        {
-          name: "authority";
-          isMut: true;
-          isSigner: true;
-        },
-        {
-          name: "rafflerAccount";
-          isMut: false;
-          isSigner: false;
-        },
-        {
-          name: "raffleAccount";
-          isMut: true;
-          isSigner: false;
-        },
-        {
-          name: "ticketAccount";
-          isMut: true;
-          isSigner: false;
-        },
-        {
-          name: "nftMint";
-          isMut: false;
-          isSigner: false;
-        },
-        {
-          name: "escrowTokenAccount";
-          isMut: true;
-          isSigner: false;
-        },
-        {
-          name: "claimerTokenAccount";
-          isMut: true;
-          isSigner: false;
-        },
-        {
-          name: "systemProgram";
-          isMut: false;
-          isSigner: false;
-        },
-        {
-          name: "tokenProgram";
-          isMut: false;
-          isSigner: false;
-        },
-        {
-          name: "associatedTokenProgram";
-          isMut: false;
-          isSigner: false;
-        }
-      ];
-      args: [];
-    },
-    {
       name: "raffleWithdraw";
       accounts: [
         {
@@ -250,6 +314,22 @@ export type Degen = {
         },
         {
           name: "rafflerAccount";
+          isMut: true;
+          isSigner: false;
+        },
+        {
+          name: "adminAccount";
+          isMut: true;
+          isSigner: false;
+        },
+        {
+          name: "adminTreasuryAccount";
+          isMut: true;
+          isSigner: false;
+          docs: ["CHECK DOING"];
+        },
+        {
+          name: "adminTokenAccount";
           isMut: true;
           isSigner: false;
         },
@@ -274,22 +354,6 @@ export type Degen = {
           isSigner: false;
         },
         {
-          name: "adminAccount";
-          isMut: true;
-          isSigner: false;
-        },
-        {
-          name: "adminTreasuryAccount";
-          isMut: true;
-          isSigner: false;
-          docs: ["CHECK DOING"];
-        },
-        {
-          name: "adminTokenAccount";
-          isMut: true;
-          isSigner: false;
-        },
-        {
           name: "tokenProgram";
           isMut: false;
           isSigner: false;
@@ -308,45 +372,15 @@ export type Degen = {
       args: [];
     },
     {
-      name: "addReward";
+      name: "declareWinner";
       accounts: [
-        {
-          name: "authority";
-          isMut: true;
-          isSigner: true;
-        },
         {
           name: "raffleAccount";
           isMut: true;
           isSigner: false;
         },
         {
-          name: "nftMint";
-          isMut: false;
-          isSigner: false;
-        },
-        {
-          name: "authorityTokenAccount";
-          isMut: true;
-          isSigner: false;
-        },
-        {
-          name: "escrowTokenAccount";
-          isMut: true;
-          isSigner: false;
-        },
-        {
-          name: "associatedTokenProgram";
-          isMut: false;
-          isSigner: false;
-        },
-        {
-          name: "tokenProgram";
-          isMut: false;
-          isSigner: false;
-        },
-        {
-          name: "systemProgram";
+          name: "recentSlothashes";
           isMut: false;
           isSigner: false;
         }
@@ -388,26 +422,6 @@ export type Degen = {
       };
     },
     {
-      name: "raffler";
-      type: {
-        kind: "struct";
-        fields: [
-          {
-            name: "authority";
-            type: "publicKey";
-          },
-          {
-            name: "noOfRaffles";
-            type: "u8";
-          },
-          {
-            name: "ticketsSold";
-            type: "u64";
-          }
-        ];
-      };
-    },
-    {
       name: "raffle";
       type: {
         kind: "struct";
@@ -425,16 +439,16 @@ export type Degen = {
             type: "publicKey";
           },
           {
-            name: "noOfRewards";
-            type: "u8";
-          },
-          {
             name: "rewards";
             type: {
               vec: {
-                defined: "RewardWinner";
+                defined: "RaffleReward";
               };
             };
+          },
+          {
+            name: "maxTickets";
+            type: "u16";
           },
           {
             name: "endDate";
@@ -451,6 +465,26 @@ export type Degen = {
           {
             name: "treasuryAccount";
             type: "publicKey";
+          }
+        ];
+      };
+    },
+    {
+      name: "raffler";
+      type: {
+        kind: "struct";
+        fields: [
+          {
+            name: "authority";
+            type: "publicKey";
+          },
+          {
+            name: "noOfRaffles";
+            type: "u8";
+          },
+          {
+            name: "ticketsSold";
+            type: "u64";
           }
         ];
       };
@@ -480,7 +514,7 @@ export type Degen = {
   ];
   types: [
     {
-      name: "RewardWinner";
+      name: "RaffleReward";
       type: {
         kind: "struct";
         fields: [
@@ -588,44 +622,10 @@ export type Degen = {
   ];
 };
 
-export const IDL: Degen = {
+export const IDL: CnftRaffle = {
   version: "0.1.0",
-  name: "degen",
+  name: "cnft_raffle",
   instructions: [
-    {
-      name: "createAdmin",
-      accounts: [
-        {
-          name: "authority",
-          isMut: true,
-          isSigner: true,
-        },
-        {
-          name: "adminAccount",
-          isMut: true,
-          isSigner: false,
-        },
-        {
-          name: "treasuryAccount",
-          isMut: false,
-          isSigner: false,
-          docs: [
-            "Should be a MultiSig Once we finalize which multisig then i can do a account owner check",
-          ],
-        },
-        {
-          name: "systemProgram",
-          isMut: false,
-          isSigner: false,
-        },
-      ],
-      args: [
-        {
-          name: "fee",
-          type: "u64",
-        },
-      ],
-    },
     {
       name: "createRaffler",
       accounts: [
@@ -666,6 +666,11 @@ export const IDL: Degen = {
           isSigner: false,
         },
         {
+          name: "adminAccount",
+          isMut: true,
+          isSigner: false,
+        },
+        {
           name: "ticketMint",
           isMut: false,
           isSigner: false,
@@ -676,8 +681,8 @@ export const IDL: Degen = {
           isSigner: false,
         },
         {
-          name: "adminAccount",
-          isMut: true,
+          name: "systemProgram",
+          isMut: false,
           isSigner: false,
         },
         {
@@ -690,11 +695,6 @@ export const IDL: Degen = {
           isMut: false,
           isSigner: false,
         },
-        {
-          name: "systemProgram",
-          isMut: false,
-          isSigner: false,
-        },
       ],
       args: [
         {
@@ -704,6 +704,176 @@ export const IDL: Degen = {
         {
           name: "price",
           type: "u64",
+        },
+        {
+          name: "maxTickets",
+          type: "u16",
+        },
+      ],
+    },
+    {
+      name: "addReward",
+      accounts: [
+        {
+          name: "authority",
+          isMut: true,
+          isSigner: true,
+        },
+        {
+          name: "raffleAccount",
+          isMut: true,
+          isSigner: false,
+        },
+        {
+          name: "treeAuthority",
+          isMut: false,
+          isSigner: false,
+        },
+        {
+          name: "merkleTree",
+          isMut: true,
+          isSigner: false,
+        },
+        {
+          name: "logWrapper",
+          isMut: false,
+          isSigner: false,
+        },
+        {
+          name: "compressionProgram",
+          isMut: false,
+          isSigner: false,
+        },
+        {
+          name: "bubblegumProgram",
+          isMut: false,
+          isSigner: false,
+        },
+        {
+          name: "systemProgram",
+          isMut: false,
+          isSigner: false,
+        },
+      ],
+      args: [
+        {
+          name: "root",
+          type: {
+            array: ["u8", 32],
+          },
+        },
+        {
+          name: "dataHash",
+          type: {
+            array: ["u8", 32],
+          },
+        },
+        {
+          name: "creatorHash",
+          type: {
+            array: ["u8", 32],
+          },
+        },
+        {
+          name: "nonce",
+          type: "u64",
+        },
+        {
+          name: "index",
+          type: "u32",
+        },
+      ],
+    },
+    {
+      name: "claimPrize",
+      accounts: [
+        {
+          name: "authority",
+          isMut: true,
+          isSigner: true,
+        },
+        {
+          name: "treeAuthority",
+          isMut: false,
+          isSigner: false,
+        },
+        {
+          name: "merkleTree",
+          isMut: true,
+          isSigner: false,
+        },
+        {
+          name: "rafflerAccount",
+          isMut: false,
+          isSigner: false,
+        },
+        {
+          name: "raffleAccount",
+          isMut: true,
+          isSigner: false,
+        },
+        {
+          name: "ticketAccount",
+          isMut: true,
+          isSigner: false,
+        },
+        {
+          name: "logWrapper",
+          isMut: false,
+          isSigner: false,
+        },
+        {
+          name: "compressionProgram",
+          isMut: false,
+          isSigner: false,
+        },
+        {
+          name: "bubblegumProgram",
+          isMut: false,
+          isSigner: false,
+        },
+        {
+          name: "systemProgram",
+          isMut: false,
+          isSigner: false,
+        },
+        {
+          name: "tokenProgram",
+          isMut: false,
+          isSigner: false,
+        },
+        {
+          name: "associatedTokenProgram",
+          isMut: false,
+          isSigner: false,
+        },
+      ],
+      args: [
+        {
+          name: "root",
+          type: {
+            array: ["u8", 32],
+          },
+        },
+        {
+          name: "dataHash",
+          type: {
+            array: ["u8", 32],
+          },
+        },
+        {
+          name: "creatorHash",
+          type: {
+            array: ["u8", 32],
+          },
+        },
+        {
+          name: "nonce",
+          type: "u64",
+        },
+        {
+          name: "index",
+          type: "u32",
         },
       ],
     },
@@ -759,78 +929,6 @@ export const IDL: Degen = {
       ],
     },
     {
-      name: "declareWinner",
-      accounts: [
-        {
-          name: "raffleAccount",
-          isMut: true,
-          isSigner: false,
-        },
-        {
-          name: "recentSlothashes",
-          isMut: false,
-          isSigner: false,
-        },
-      ],
-      args: [],
-    },
-    {
-      name: "claimPrize",
-      accounts: [
-        {
-          name: "authority",
-          isMut: true,
-          isSigner: true,
-        },
-        {
-          name: "rafflerAccount",
-          isMut: false,
-          isSigner: false,
-        },
-        {
-          name: "raffleAccount",
-          isMut: true,
-          isSigner: false,
-        },
-        {
-          name: "ticketAccount",
-          isMut: true,
-          isSigner: false,
-        },
-        {
-          name: "nftMint",
-          isMut: false,
-          isSigner: false,
-        },
-        {
-          name: "escrowTokenAccount",
-          isMut: true,
-          isSigner: false,
-        },
-        {
-          name: "claimerTokenAccount",
-          isMut: true,
-          isSigner: false,
-        },
-        {
-          name: "systemProgram",
-          isMut: false,
-          isSigner: false,
-        },
-        {
-          name: "tokenProgram",
-          isMut: false,
-          isSigner: false,
-        },
-        {
-          name: "associatedTokenProgram",
-          isMut: false,
-          isSigner: false,
-        },
-      ],
-      args: [],
-    },
-    {
       name: "raffleWithdraw",
       accounts: [
         {
@@ -840,6 +938,22 @@ export const IDL: Degen = {
         },
         {
           name: "rafflerAccount",
+          isMut: true,
+          isSigner: false,
+        },
+        {
+          name: "adminAccount",
+          isMut: true,
+          isSigner: false,
+        },
+        {
+          name: "adminTreasuryAccount",
+          isMut: true,
+          isSigner: false,
+          docs: ["CHECK DOING"],
+        },
+        {
+          name: "adminTokenAccount",
           isMut: true,
           isSigner: false,
         },
@@ -864,22 +978,6 @@ export const IDL: Degen = {
           isSigner: false,
         },
         {
-          name: "adminAccount",
-          isMut: true,
-          isSigner: false,
-        },
-        {
-          name: "adminTreasuryAccount",
-          isMut: true,
-          isSigner: false,
-          docs: ["CHECK DOING"],
-        },
-        {
-          name: "adminTokenAccount",
-          isMut: true,
-          isSigner: false,
-        },
-        {
           name: "tokenProgram",
           isMut: false,
           isSigner: false,
@@ -898,45 +996,15 @@ export const IDL: Degen = {
       args: [],
     },
     {
-      name: "addReward",
+      name: "declareWinner",
       accounts: [
-        {
-          name: "authority",
-          isMut: true,
-          isSigner: true,
-        },
         {
           name: "raffleAccount",
           isMut: true,
           isSigner: false,
         },
         {
-          name: "nftMint",
-          isMut: false,
-          isSigner: false,
-        },
-        {
-          name: "authorityTokenAccount",
-          isMut: true,
-          isSigner: false,
-        },
-        {
-          name: "escrowTokenAccount",
-          isMut: true,
-          isSigner: false,
-        },
-        {
-          name: "associatedTokenProgram",
-          isMut: false,
-          isSigner: false,
-        },
-        {
-          name: "tokenProgram",
-          isMut: false,
-          isSigner: false,
-        },
-        {
-          name: "systemProgram",
+          name: "recentSlothashes",
           isMut: false,
           isSigner: false,
         },
@@ -978,26 +1046,6 @@ export const IDL: Degen = {
       },
     },
     {
-      name: "raffler",
-      type: {
-        kind: "struct",
-        fields: [
-          {
-            name: "authority",
-            type: "publicKey",
-          },
-          {
-            name: "noOfRaffles",
-            type: "u8",
-          },
-          {
-            name: "ticketsSold",
-            type: "u64",
-          },
-        ],
-      },
-    },
-    {
       name: "raffle",
       type: {
         kind: "struct",
@@ -1015,16 +1063,16 @@ export const IDL: Degen = {
             type: "publicKey",
           },
           {
-            name: "noOfRewards",
-            type: "u8",
-          },
-          {
             name: "rewards",
             type: {
               vec: {
-                defined: "RewardWinner",
+                defined: "RaffleReward",
               },
             },
+          },
+          {
+            name: "maxTickets",
+            type: "u16",
           },
           {
             name: "endDate",
@@ -1041,6 +1089,26 @@ export const IDL: Degen = {
           {
             name: "treasuryAccount",
             type: "publicKey",
+          },
+        ],
+      },
+    },
+    {
+      name: "raffler",
+      type: {
+        kind: "struct",
+        fields: [
+          {
+            name: "authority",
+            type: "publicKey",
+          },
+          {
+            name: "noOfRaffles",
+            type: "u8",
+          },
+          {
+            name: "ticketsSold",
+            type: "u64",
           },
         ],
       },
@@ -1070,7 +1138,7 @@ export const IDL: Degen = {
   ],
   types: [
     {
-      name: "RewardWinner",
+      name: "RaffleReward",
       type: {
         kind: "struct",
         fields: [
