@@ -3,7 +3,6 @@
 
 import * as anchor from "@coral-xyz/anchor";
 import clsx from "clsx";
-import RaffleImage from "./ui/RaffleImage";
 import Link from "next/link";
 import { RaffleCardInterface, RewardAsset } from "@/types";
 import { RaffleTimer } from "./RaffleTimer";
@@ -22,6 +21,7 @@ import { RPC } from "@/lib/constants";
 import { BitArray } from "@/lib/program/bitArray";
 import { useTokenBalance } from "@/hooks/useTokenBalance";
 import { useEffect, useState } from "react";
+import { Loader2 } from "lucide-react";
 import {
   Carousel,
   CarouselContent,
@@ -46,7 +46,6 @@ export function RaffleCard(props: RaffleCardProps) {
     mint: props.assets.map((asset) => asset.reward.toString()),
   });
   const tokenBalances = useTokenBalance(props.treasuryAccount);
-  console.log("tokenBalances", tokenBalances);
   let useAnchorWallet;
   if (typeof window !== "undefined") {
     ({ useAnchorWallet } = require("@jup-ag/wallet-adapter"));
@@ -54,6 +53,7 @@ export function RaffleCard(props: RaffleCardProps) {
   const wallet = useAnchorWallet();
   const token = searchTokenByMintAddress(props.ticketMint);
   const uiPrice = token ? props.price / 10 ** token.decimals : 0;
+
   const [isWinner, setIsWinner] = useState<RewardAsset | undefined>();
   const canWithdraw = !!props.endDate && new Date() < props.endDate;
   const isWinnersDeclared = props.assets.every((asset) => asset.randomNo > 0);
@@ -83,6 +83,7 @@ export function RaffleCard(props: RaffleCardProps) {
     }
   }, [props.ticketAccount, props.assets]);
 
+  //TODO: (Pratik) i think a better approach would be to get this passed from the parent component
   const declareWinnerHandler = async () => {
     try {
       // if (canWithdraw) {
@@ -173,7 +174,7 @@ export function RaffleCard(props: RaffleCardProps) {
       const ix = await claimPrizeIx(
         wallet,
         new anchor.web3.PublicKey(props.raffle),
-        isWinner[0].reward,
+        isWinner[0].reward.toString(),
         new anchor.web3.PublicKey(props.raffleCreator)
       );
       if (!ix) {
@@ -279,6 +280,7 @@ export function RaffleCard(props: RaffleCardProps) {
                   )}
                   src={nft.data?.content.links.image}
                   alt={nft.data?.content.links.image}
+                  loading="lazy"
                 />
                 {!props.hideDetails && (
                   <div className="flex-col justify-between relative p-4">
@@ -385,8 +387,12 @@ export function RaffleCard(props: RaffleCardProps) {
             );
           })}
         </CarouselContent>
-        <CarouselPrevious className="left-2" />
-        <CarouselNext className="right-2" />
+        {nftQueries.length > 1 && (
+          <>
+            <CarouselPrevious className="left-2" />
+            <CarouselNext className="right-2" />
+          </>
+        )}
       </Carousel>
     </div>
   );

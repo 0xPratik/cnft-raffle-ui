@@ -307,9 +307,7 @@ export const claimPrizeIx = async (
   wallet: anchor.Wallet,
   raffleAccount: anchor.web3.PublicKey,
   assetId: string,
-  raffleCreator: anchor.web3.PublicKey,
-  treeAddress: anchor.web3.PublicKey,
-  treeAuthority: anchor.web3.PublicKey
+  raffleCreator: anchor.web3.PublicKey
 ) => {
   anchor.setProvider({
     connection: new anchor.web3.Connection(RPC),
@@ -327,7 +325,9 @@ export const claimPrizeIx = async (
   const nonce = new anchor.BN(asset.compression.leaf_id);
   const index = asset.compression.leaf_id;
   const proofPathAsAccounts = mapProof(proof);
-
+  const treeAddress = new anchor.web3.PublicKey(asset.compression.tree);
+  console.log("TREE ADDRESS", treeAddress);
+  const treeAuthority = getTreeAuthority(treeAddress);
   const ix = await program?.methods
     .claimPrize(root, dataHash, creatorHash, nonce, index)
     .accounts({
