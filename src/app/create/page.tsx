@@ -196,10 +196,21 @@ export default function Create() {
             )}
           >
             <button onClick={() => setCreateState(CreateStates.Step1)}>
-              <span className="flex items-center justify-center w-12 h-12 p-4 mx-auto mb-2 text-primary border border-ring rounded-full">
+              <span
+                className={clsx(
+                  "flex items-center justify-center w-12 h-12 p-4 mx-auto mb-2 text-primary border  border-ring  rounded-full",
+                  createState == CreateStates.Step1 && "border-2 font-bold"
+                )}
+              >
                 1
               </span>
-              <span>Select NFTs</span>
+              <span
+                className={clsx(
+                  createState == CreateStates.Step1 && "font-bold"
+                )}
+              >
+                Select NFTs
+              </span>
             </button>
           </li>
           <li className="w-full">
@@ -216,10 +227,21 @@ export default function Create() {
                 validateSteps(1) && setCreateState(CreateStates.Step2)
               }
             >
-              <span className="flex items-center justify-center w-12 h-12 p-4 mx-auto mb-2 text-primary border border-ring rounded-full">
+              <span
+                className={clsx(
+                  "flex items-center justify-center w-12 h-12 p-4 mx-auto mb-2 text-primary border border-ring rounded-full",
+                  createState == CreateStates.Step2 && "border-2 font-bold"
+                )}
+              >
                 2
               </span>
-              <span>Raffle Details</span>
+              <span
+                className={clsx(
+                  createState == CreateStates.Step2 && "font-bold"
+                )}
+              >
+                Raffle Details
+              </span>
             </button>
           </li>
           <li className="w-full">
@@ -236,10 +258,21 @@ export default function Create() {
                 validateSteps(2) && setCreateState(CreateStates.Step3)
               }
             >
-              <span className="flex items-center justify-center w-12 h-12 p-4 mx-auto mb-2 text-primary border border-ring rounded-full">
+              <span
+                className={clsx(
+                  "flex items-center justify-center w-12 h-12 p-4 mx-auto mb-2 text-primary border border-ring rounded-full",
+                  createState == CreateStates.Step3 && "border-2 font-bold"
+                )}
+              >
                 3
               </span>
-              <span>Confirm &amp; Transact</span>
+              <span
+                className={clsx(
+                  createState == CreateStates.Step3 && "font-bold"
+                )}
+              >
+                Confirm &amp; Transact
+              </span>
             </button>
           </li>
         </ul>
@@ -263,7 +296,6 @@ export default function Create() {
                     <div
                       key={index}
                       onClick={() => {
-                        console.log("ITEM", item);
                         if (selectedTokens.includes(item)) {
                           const selTokens = selectedTokens;
                           console.log("selTokens", selTokens);
@@ -287,9 +319,9 @@ export default function Create() {
                         }
                       }}
                       className={clsx(
-                        "overflow-hidden w-full h-[160px] object-cover rounded-md flex items-center justify-center transition-colors bg-gray-100 cursor-pointer hover:bg-gray-300",
+                        "overflow-hidden w-full h-[160px] object-cover rounded-md flex items-center justify-center transition-colors bg-gray-100 cursor-pointer border border-primary ",
                         selectedTokens.includes(item) &&
-                          "border-4 border-indigo-400"
+                          "border-2 border-indigo-400"
                       )}
                     >
                       <SelectImage imageUri={item.content.links.image} />
@@ -302,7 +334,10 @@ export default function Create() {
                 </div>
               )}
             </div>
-            <div className="flex items-center justify-end w-full gap-2 py-4">
+            <div className="flex items-center justify-between w-full gap-2 py-4">
+              <p className="text-md text-muted-foreground">
+                * you can add upto 3 NFTs as rewards in a Raffle
+              </p>
               <Button
                 disabled={!validateSteps(1)}
                 onClick={() => {
@@ -315,7 +350,7 @@ export default function Create() {
           </div>
         )}
         {createState === CreateStates.Step2 && (
-          <div className="flex flex-row w-full p-4 justify-around">
+          <div className="flex flex-row w-full p-4 h-[516px] justify-around">
             <div>
               <RaffleImage
                 imageSrc={selectedTokens.map(
@@ -349,6 +384,7 @@ export default function Create() {
                         mode="single"
                         selected={enddate}
                         onSelect={setEndDate}
+                        disabled={{ before: new Date() }}
                         initialFocus
                       />
                     </PopoverContent>
@@ -388,6 +424,8 @@ export default function Create() {
                     type="number"
                     className="w-full border-gray-300 rounded-lg"
                     value={raffleData.price || ""}
+                    min={0}
+                    step={0.1}
                     onChange={(e) =>
                       setRaffleData({
                         ...raffleData,
@@ -435,13 +473,16 @@ export default function Create() {
 
               <ul className="mb-8 space-y-2 text-sm">
                 <li>
-                  <strong className="font-semibold">End Date</strong>:{" "}
-                  {dayjs(enddate).format("dddd, MMMM D, YYYY h:mm A")}
+                  <strong className="font-medium">raffle ends at</strong>:{" "}
+                  <span className="font-bold">
+                    {dayjs(enddate).format("dddd, MMMM D, YYYY h:mm A")}
+                  </span>
                 </li>
                 <li>
-                  <strong className="font-semibold">Tickets price</strong>:{" "}
-                  {raffleData.price}{" "}
-                  <span className="font-bold">{selectedToken.tokenName}</span>
+                  <strong className="font-medium">price per ticket</strong>:{" "}
+                  <span className="font-bold">
+                    {raffleData.price} {selectedToken.tokenName}
+                  </span>
                 </li>
                 {/* <li
                     className={clsx(
@@ -461,18 +502,6 @@ export default function Create() {
               <div className="flex items-center justify-between w-full gap-2">
                 <Button
                   onClick={() => {
-                    // setRaffleData({
-                    //   assets: [],
-                    //   endDate: new Date(),
-                    //   ticketsTotal: 0,
-                    //   soldTickets: 0,
-                    //   price: 0,
-                    //   raffle: "",
-                    //   ticketMint: "",
-                    //   treasuryAccount: "",
-                    // });
-                    // setEndDate(undefined);
-                    // setSelectedTokens([]);
                     setCreateState(CreateStates.Step2);
                   }}
                 >

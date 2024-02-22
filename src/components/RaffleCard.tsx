@@ -21,7 +21,6 @@ import { RPC } from "@/lib/constants";
 import { BitArray } from "@/lib/program/bitArray";
 import { useTokenBalance } from "@/hooks/useTokenBalance";
 import { useEffect, useState } from "react";
-import { Loader2 } from "lucide-react";
 import {
   Carousel,
   CarouselContent,
@@ -284,14 +283,14 @@ export function RaffleCard(props: RaffleCardProps) {
                 />
                 {!props.hideDetails && (
                   <div className="flex-col justify-between relative p-4">
-                    <header className="mb-4">
-                      <h2 className="flex text-2xl font-bold tracking-tight h-[2em]">
+                    <header className="mb-2">
+                      <h2 className="flex text-2xl font-bold tracking-tight ">
                         <Link href={`/raffle/${props.raffle}`}>
                           {nft.data?.content.metadata.name}
                         </Link>
                       </h2>
                     </header>
-                    <ul className="mb-6 text-sm">
+                    <ul className="mb-4 text-sm">
                       <li>
                         <strong className="font-semibold">Tickets price</strong>
                         : {uiPrice}{" "}

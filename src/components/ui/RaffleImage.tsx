@@ -32,8 +32,9 @@ function RaffleImage(props: RaffleImageProps) {
                     "object-cover w-full",
                     "max-w-full",
                     "height: auto",
+                    "border border-primary",
                     props.link !== "" && "cursor-pointer",
-                    !props.hideDetails && "rounded-t-lg",
+                    !props.hideDetails && "rounded-lg",
                     props.hideDetails && "rounded-lg",
                     (!props.size || props.size === "sm") && "h-80",
                     props.size && props.size === "lg" && "h-[500px]"

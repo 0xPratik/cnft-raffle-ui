@@ -62,7 +62,7 @@ export const Header = () => {
                 variant={"link"}
                 className={`${
                   pathname === "/profile"
-                    ? "border-b-black font-extrabold"
+                    ? "font-semibold border-b-black"
                     : "hover:border-b-black"
                 } `}
               >
@@ -79,7 +79,7 @@ export const Header = () => {
                 variant={"link"}
                 className={`${
                   pathname === "/create"
-                    ? "border-b-black font-extrabold"
+                    ? "border-b-black font-semibold "
                     : "hover:border-b-black"
                 } `}
               >
