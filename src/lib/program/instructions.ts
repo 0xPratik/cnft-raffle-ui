@@ -270,9 +270,9 @@ export const buyTicketIx = async (
         wallet.publicKey,
         wallet.publicKey
       );
-
+      const sync = createSyncNativeInstruction(buyerAta);
       console.log("SENDING THIS");
-      return [createATA, nativeIx, ix, closeATA];
+      return [createATA, nativeIx, sync, ix];
     }
     console.log("RETURNING THIS");
     return [ix];
