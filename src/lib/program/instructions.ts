@@ -4,8 +4,15 @@ import { degenProgram } from ".";
 import { findRafflePDA, findRafflerPDA, findTicketPDA } from "./pdas";
 import {
   ASSOCIATED_TOKEN_PROGRAM_ID,
+  NATIVE_MINT,
   TOKEN_PROGRAM_ID,
+  createAssociatedTokenAccount,
+  createAssociatedTokenAccountInstruction,
+  createCloseAccountInstruction,
+  createInitializeAccountInstruction,
+  createSyncNativeInstruction,
   getAssociatedTokenAddress,
+  getMinimumBalanceForRentExemptAccount,
 } from "@solana/spl-token";
 import { getAdminPDA, getRaffler } from "./programFetch";
 import { getAsset, getAssetProof } from "./ReadApi";
@@ -167,13 +174,7 @@ export const addRewardIx = async (
     const asset = await getAsset(assetId, RPC);
     console.log("asset", asset);
     console.log("RPC", RPC);
-    // sleep for 1 sec
-    const pauseExecution = async () => {
-      console.log("Pausing for 5 seconds...");
-      await new Promise((resolve) => setTimeout(resolve, 5000));
-      console.log("Resuming execution.");
-    };
-    await pauseExecution();
+
     const proof = await getAssetProof(assetId, RPC);
     console.log("proof", proof);
     const root = decode(proof.root);
@@ -208,10 +209,13 @@ export const addRewardIx = async (
 export const buyTicketIx = async (
   wallet: anchor.Wallet,
   noOfTickets: number,
+  price: number,
   ticketMint: anchor.web3.PublicKey,
   raffleAccount: anchor.web3.PublicKey
 ) => {
   try {
+    console.log("ticketMint", ticketMint.toString(), NATIVE_MINT.toString());
+
     anchor.setProvider({
       connection: new anchor.web3.Connection(RPC),
     });
@@ -242,7 +246,36 @@ export const buyTicketIx = async (
       })
       .instruction();
 
-    return ix;
+    if (ticketMint.toString() === NATIVE_MINT.toString()) {
+      console.log("IN HERE NATIVE ");
+      console.log("price", price);
+      const amount = noOfTickets * price;
+
+      console.log("amountInLamports", amount);
+      const nativeIx = anchor.web3.SystemProgram.transfer({
+        fromPubkey: wallet.publicKey,
+        toPubkey: buyerAta,
+        lamports:
+          amount +
+          (await getMinimumBalanceForRentExemptAccount(provider.connection)),
+      });
+      const createATA = createAssociatedTokenAccountInstruction(
+        wallet.publicKey,
+        buyerAta,
+        wallet.publicKey,
+        NATIVE_MINT
+      );
+      const closeATA = createCloseAccountInstruction(
+        buyerAta,
+        wallet.publicKey,
+        wallet.publicKey
+      );
+
+      console.log("SENDING THIS");
+      return [createATA, nativeIx, ix, closeATA];
+    }
+    console.log("RETURNING THIS");
+    return [ix];
   } catch (error) {
     console.log("Something Went Wrong in Buy Ticket", error);
     throw new Error(JSON.stringify(error));

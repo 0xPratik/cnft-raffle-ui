@@ -28,6 +28,7 @@ import {
   CarouselNext,
   CarouselPrevious,
 } from "@/components/ui/carousel";
+import { useTxSigner } from "@/hooks/useTxSigner";
 
 interface RaffleCardProps extends RaffleCardInterface {
   hideDetails?: boolean;
@@ -54,8 +55,10 @@ export function RaffleCard(props: RaffleCardProps) {
   const uiPrice = token ? props.price / 10 ** token.decimals : 0;
 
   const [isWinner, setIsWinner] = useState<RewardAsset | undefined>();
-  const canWithdraw = !!props.endDate && new Date() < props.endDate;
+  const isRaffleEnded = !!props.endDate && new Date() > props.endDate;
   const isWinnersDeclared = props.assets.every((asset) => asset.randomNo > 0);
+  const canWithdraw = isRaffleEnded && isWinnersDeclared;
+  const performTransaction = useTxSigner();
 
   console.log("isWinnersDeclared", isWinnersDeclared);
   console.log("RAFFLECREATOR", props.raffleCreator);
@@ -89,36 +92,17 @@ export function RaffleCard(props: RaffleCardProps) {
       //   toast.error("Can't declare winner yet");
       //   return;
       // }
-
-      if (!wallet?.publicKey) {
-        toast.error("Connect wallet to declare winner");
-        return;
-      }
-
-      const connection = new anchor.web3.Connection(RPC);
-      const { blockhash } = await connection.getLatestBlockhash();
-      const transaction = new anchor.web3.Transaction({
-        recentBlockhash: blockhash,
-        feePayer: wallet.publicKey,
-      });
-
+      const cluster =
+        process.env.NEXT_PUBLIC_ENV === "mainnet-beta" ? "mainnet" : "devnet";
       const ix = await declareWinnerIx(new anchor.web3.PublicKey(props.raffle));
-      if (!ix) {
-        throw new Error("Failed to create Withdraw Instruction");
-      }
-
-      transaction.add(ix);
-
-      const signedTx = await wallet.signTransaction(transaction);
-      const sig = await connection.sendRawTransaction(signedTx.serialize());
-      const res = await connection.confirmTransaction(sig, "confirmed");
+      const sig = await performTransaction([ix]);
       toast.success("Winner Declared");
       toast("Check on Explorer", {
         action: {
           label: "View on Solana Explorer",
           onClick: () =>
             window.open(
-              "https://explorer.solana.com/tx/" + sig + "?cluster=devnet",
+              "https://xray.helius.xyz/tx/" + sig + `?cluster=${cluster}`,
               "_blank"
             ),
         },
@@ -152,23 +136,10 @@ export function RaffleCard(props: RaffleCardProps) {
         toast.error("You are not a winner");
         return;
       }
-
-      if (!wallet?.publicKey) {
-        toast.error("Connect wallet to declare winner");
-        return;
-      }
-
       if (!props.raffleCreator) {
         toast.error("Raffle Creator not found");
         return;
       }
-
-      const connection = new anchor.web3.Connection(RPC);
-      const { blockhash } = await connection.getLatestBlockhash();
-      const transaction = new anchor.web3.Transaction({
-        recentBlockhash: blockhash,
-        feePayer: wallet.publicKey,
-      });
       console.log("CREATING CLAIM INSTRUCTION");
       const ix = await claimPrizeIx(
         wallet,
@@ -176,44 +147,28 @@ export function RaffleCard(props: RaffleCardProps) {
         isWinner[0].reward.toString(),
         new anchor.web3.PublicKey(props.raffleCreator)
       );
-      if (!ix) {
-        throw new Error("Failed to create Claim Instruction");
-      }
-      transaction.add(ix);
-
-      const signedTx = await wallet.signTransaction(transaction);
-      const sig = await connection.sendRawTransaction(signedTx.serialize(), {
-        skipPreflight: true,
-      });
-      const res = await connection.confirmTransaction(sig, "confirmed");
+      const sig = await performTransaction([ix]);
+      const cluster =
+        process.env.NEXT_PUBLIC_ENV === "mainnet-beta" ? "mainnet" : "devnet";
       toast.success("Claimed Prize successfully");
       toast("Check on Explorer", {
         action: {
           label: "View on Solana Explorer",
           onClick: () =>
             window.open(
-              "https://explorer.solana.com/tx/" + sig + "?cluster=devnet",
+              "https://xray.helius.xyz/tx/" + sig + `?cluster=${cluster}`,
               "_blank"
             ),
         },
       });
-    } catch (error) {
+    } catch (error: any) {
+      toast.error(error.message);
       console.log("Claim Prize Error", error);
     }
   };
 
   const withdrawAction = async () => {
     try {
-      if (!wallet?.publicKey) {
-        return;
-      }
-
-      const connection = new anchor.web3.Connection(RPC);
-      const { blockhash } = await connection.getLatestBlockhash();
-      const transaction = new anchor.web3.Transaction({
-        recentBlockhash: blockhash,
-        feePayer: wallet.publicKey,
-      });
       if (!props.ticketMint || !props.raffle) {
         toast.error("Ticket Mint or Raffle Account not found");
         throw new Error("Ticket Mint or Raffle Account not found");
@@ -223,25 +178,16 @@ export function RaffleCard(props: RaffleCardProps) {
         new anchor.web3.PublicKey(props.ticketMint),
         new anchor.web3.PublicKey(props.raffle)
       );
-
-      if (!ix) {
-        throw new Error("Failed to create Withdraw Instruction");
-      }
-
-      transaction.add(ix);
-
-      const signedTx = await wallet.signTransaction(transaction);
-      const sig = await connection.sendRawTransaction(signedTx.serialize(), {
-        skipPreflight: true,
-      });
-      const res = await connection.confirmTransaction(sig, "confirmed");
+      const sig = await performTransaction([ix]);
+      const cluster =
+        process.env.NEXT_PUBLIC_ENV === "mainnet-beta" ? "mainnet" : "devnet";
       toast.success("Withdraw successfully");
       toast("Check on Explorer", {
         action: {
           label: "View on Solana Explorer",
           onClick: () =>
             window.open(
-              "https://explorer.solana.com/tx/" + sig + "?cluster=devnet",
+              "https://xray.helius.xyz/tx/" + sig + `?cluster=${cluster}`,
               "_blank"
             ),
         },
@@ -252,7 +198,7 @@ export function RaffleCard(props: RaffleCardProps) {
       toast.error(error.message);
     }
   };
-  // console.log("nftQueries", nftQueries);
+
   return (
     <div
       className={clsx(

@@ -10,6 +10,7 @@ import { buyTicketIx } from "../lib/program/instructions";
 import clsx from "clsx";
 import { RPC } from "@/lib/constants";
 import { useState } from "react";
+import { useTxSigner } from "@/hooks/useTxSigner";
 
 interface TicketPurchaseProps extends RaffleCardInterface {
   size?: "sm" | "lg";
@@ -27,25 +28,20 @@ export const TicketPurchase = (props: TicketPurchaseProps) => {
   const [ticketPurchaseState, setTicketPurchaseState] =
     useState<TicketPurchaseStates>(TicketPurchaseStates.Default);
 
+  const performTransaction = useTxSigner();
   let useAnchorWallet;
   if (typeof window !== "undefined") {
     ({ useAnchorWallet } = require("@jup-ag/wallet-adapter"));
   }
   const wallet = useAnchorWallet();
-  console.log("wallet?.publicKey", wallet?.publicKey);
-  console.log("ticketQty", ticketQty);
+
   const shouldDisable =
     wallet?.publicKey === null ||
     wallet?.publicKey === undefined ||
     ticketQty === 0;
 
-  console.log("shouldDisable", shouldDisable);
-
   const handleTicketPurchase = async () => {
     try {
-      if (!wallet?.publicKey || !wallet) {
-        return;
-      }
       if (!ticketQty) {
         throw new Error("Please enter a valid ticket quantity");
       }
@@ -54,14 +50,6 @@ export const TicketPurchase = (props: TicketPurchaseProps) => {
         toast.error("Please enter a valid ticket quantity");
         return;
       }
-
-      const connection = new Connection(RPC);
-      const { blockhash } = await connection.getLatestBlockhash();
-      const transaction = new anchor.web3.Transaction({
-        recentBlockhash: blockhash,
-        feePayer: wallet.publicKey,
-      });
-
       if (!props.raffle && !props.ticketMint && props.raffle === undefined) {
         toast.error("Please enter a valid raffle");
         return;
@@ -70,30 +58,22 @@ export const TicketPurchase = (props: TicketPurchaseProps) => {
       const ix = await buyTicketIx(
         wallet as NodeWallet,
         ticketQty,
+        props.price,
         new anchor.web3.PublicKey(props.ticketMint),
         new anchor.web3.PublicKey(props.raffle)
       );
 
-      if (!ix) {
-        toast.error("Please enter a valid raffle");
-        return;
-      }
-
-      transaction.add(ix);
-      const signedTx = await wallet.signTransaction(transaction);
-
-      const sig = await connection.sendRawTransaction(signedTx.serialize(), {
-        skipPreflight: true,
-      });
-      const res = await connection.confirmTransaction(sig, "confirmed");
-      console.log("Ticket Purchase", res);
+      const sig = await performTransaction(ix);
+      console.log("Ticket Purchase", sig);
       toast.success(`Ticket Purchase Confirmed!`);
+      const cluster =
+        process.env.NEXT_PUBLIC_ENV === "mainnet-beta" ? "mainnet" : "devnet";
       toast("Check on Explorer", {
         action: {
           label: "View on Solana Explorer",
           onClick: () =>
             window.open(
-              "https://explorer.solana.com/tx/" + sig + "?cluster=devnet",
+              "https://xray.helius.xyz/tx/" + sig + `?cluster=${cluster}`,
               "_blank"
             ),
         },

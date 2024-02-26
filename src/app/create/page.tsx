@@ -22,9 +22,11 @@ import TokenSelector from "@/components/TokenSelector";
 import { SOL, TokenType } from "@/lib/tokens";
 import { useCheckIsRaffler } from "@/hooks/useCheckIfRaffler";
 import { Input } from "@/components/ui/input";
-import { Calendar as CalendarIcon } from "lucide-react";
+import { Calendar as CalendarIcon, Clock4, Ticket } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Calendar } from "@/components/ui/calendar";
+import { Separator } from "@/components/ui/separator";
+
 import {
   Popover,
   PopoverContent,
@@ -230,7 +232,8 @@ export default function Create() {
               <span
                 className={clsx(
                   "flex items-center justify-center w-12 h-12 p-4 mx-auto mb-2 text-primary border border-ring rounded-full",
-                  createState == CreateStates.Step2 && "border-2 font-bold"
+                  createState == CreateStates.Step2 &&
+                    "border-2 border-primary font-bold"
                 )}
               >
                 2
@@ -319,9 +322,9 @@ export default function Create() {
                         }
                       }}
                       className={clsx(
-                        "overflow-hidden w-full h-[160px] object-cover rounded-md flex items-center justify-center transition-colors bg-gray-100 cursor-pointer border border-primary ",
+                        "overflow-hidden w-full h-[160px] object-cover rounded-md flex items-center justify-center transition-colors bg-gray-100 cursor-pointer  ",
                         selectedTokens.includes(item) &&
-                          "border-2 border-indigo-400"
+                          "border-4 border-primary"
                       )}
                     >
                       <SelectImage imageUri={item.content.links.image} />
@@ -467,19 +470,27 @@ export default function Create() {
               />
             </div>
             <div className="w-96 max-w-2xl p-4 ">
-              <p className="flex mb-6 text-xl font-medium">
-                Review and confirm raffle details.
-              </p>
-
+              <div className=" mb-6">
+                <p className="text-xl font-medium">
+                  Review and confirm raffle details.
+                </p>
+                <Separator />
+              </div>
               <ul className="mb-8 space-y-2 text-sm">
-                <li>
-                  <strong className="font-medium">raffle ends at</strong>:{" "}
+                <li className="flex-row align-baseline">
+                  {/* <div>
+                    <Clock4 className="w-4 h-4" />
+                  </div> */}
+                  <strong className="  font-medium"> ends at</strong>:{" "}
                   <span className="font-bold">
                     {dayjs(enddate).format("dddd, MMMM D, YYYY h:mm A")}
                   </span>
                 </li>
-                <li>
-                  <strong className="font-medium">price per ticket</strong>:{" "}
+                <li className="flex-row align-baseline">
+                  {/* <Ticket className="w-4 h-4" /> */}
+                  <strong className="font-medium">
+                    price per ticket
+                  </strong>:{" "}
                   <span className="font-bold">
                     {raffleData.price} {selectedToken.tokenName}
                   </span>

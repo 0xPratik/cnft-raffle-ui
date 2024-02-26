@@ -8,7 +8,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { SOL, TOKENS, TokenType } from "@/lib/tokens";
+import { USDC, TOKENS, TokenType } from "@/lib/tokens";
 
 interface TokenSelectorProps {
   selectedToken: TokenType;

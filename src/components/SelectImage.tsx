@@ -26,7 +26,6 @@ export const SelectImage = ({ imageUri }: SelectImageProps) => {
     <>
       <img
         src={imageUri}
-        onError={require("public/img/placeholder.png")}
         alt="Image"
         className="w-full h-[160px] object-cover "
       />

@@ -16,10 +16,7 @@ export default function Page() {
 
   return (
     <div className="flex flex-col w-full h-full">
-      <h1 className="text-4xl font-extrabold tracking-tight lg:text-5xl mb-6">
-        GM, Degen
-      </h1>
-      <h2 className="mt-10 scroll-m-20 border-b pb-2 text-3xl font-semibold tracking-tight transition-colors first:mt-0">
+      <h2 className="mt-10 scroll-m-20 border-b pb-2 text-3xl font-semibold  tracking-tight transition-colors first:mt-0">
         Your Raffles
       </h2>
       {userRaffles && userRaffles.length !== 0 ? (
@@ -48,7 +45,7 @@ export default function Page() {
           to buy some tickets!
         </p>
       )}
-      {userTicketAccount && (
+      {userTicketAccount && userTicketAccount.length !== 0 && (
         <>
           <h2 className="mt-10 scroll-m-20 border-b pb-2 text-3xl font-semibold tracking-tight transition-colors first:mt-0">
             Your Tickets

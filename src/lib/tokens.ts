@@ -1,3 +1,5 @@
+import { NATIVE_MINT } from "@solana/spl-token";
+
 export type TokenType = {
   tokenName: string;
   mintAddress: string;
@@ -23,13 +25,21 @@ export const GUAC: TokenType = {
 
 export const SOL: TokenType = {
   tokenName: "SOL",
-  mintAddress: "Gh9ZwEmdLJ8DscKNTkTqPbNwLNNBjuSzaG9Vp2KGtKJr",
-  decimals: 6, // change this to 9 on mainnet
+  mintAddress: NATIVE_MINT.toString(),
+  decimals: 9, // change this to 9 on mainnet
   tokenImage:
     "https://seeklogo.com/images/S/solana-sol-logo-12828AD23D-seeklogo.com.png",
 };
 
-export const TOKENS: TokenType[] = [SOL];
+export const USDC: TokenType = {
+  tokenName: "USDC",
+  mintAddress: "Gh9ZwEmdLJ8DscKNTkTqPbNwLNNBjuSzaG9Vp2KGtKJr",
+  decimals: 6, // change this to 9 on mainnet
+  tokenImage:
+    "https://jup.ag/_next/image?url=https%3A%2F%2Fraw.githubusercontent.com%2Fsolana-labs%2Ftoken-list%2Fmain%2Fassets%2Fmainnet%2FEPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v%2Flogo.png&w=64&q=75",
+};
+
+export const TOKENS: TokenType[] = [SOL, USDC];
 
 export function searchTokenByMintAddress(mintAddress: string) {
   return TOKENS.find((token) => token.mintAddress === mintAddress);

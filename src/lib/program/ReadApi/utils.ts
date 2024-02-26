@@ -1,13 +1,4 @@
-import {
-  Connection,
-  Keypair,
-  PublicKey,
-  Signer,
-  TransactionInstruction,
-  TransactionMessage,
-  VersionedTransaction,
-  AccountMeta,
-} from "@solana/web3.js";
+import { PublicKey, AccountMeta } from "@solana/web3.js";
 
 import * as bs58 from "bs58";
 
@@ -21,7 +12,7 @@ import * as bs58 from "bs58";
 export function decode(stuff: string) {
   return bufferToArray(bs58.decode(stuff));
 }
-function bufferToArray(buffer: Buffer): number[] {
+function bufferToArray(buffer: Uint8Array): number[] {
   const nums: number[] = [];
   for (let i = 0; i < buffer.length; i++) {
     nums.push(buffer[i]);

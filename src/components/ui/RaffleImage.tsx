@@ -1,7 +1,6 @@
 /* eslint-disable @next/next/no-img-element */
 import clsx from "clsx";
 import React from "react";
-import useEmblaCarousel from "embla-carousel-react";
 import {
   Carousel,
   CarouselContent,
@@ -18,7 +17,6 @@ type RaffleImageProps = {
 };
 
 function RaffleImage(props: RaffleImageProps) {
-  const [emblaRef] = useEmblaCarousel();
   return (
     // eslint-disable-next-line @next/next/no-img-element
     <>
@@ -47,8 +45,12 @@ function RaffleImage(props: RaffleImageProps) {
             );
           })}
         </CarouselContent>
-        <CarouselPrevious />
-        <CarouselNext />
+        {props.imageSrc.length > 1 && (
+          <>
+            <CarouselPrevious />
+            <CarouselNext />
+          </>
+        )}
       </Carousel>
     </>
   );
