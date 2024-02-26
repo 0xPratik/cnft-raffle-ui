@@ -54,6 +54,7 @@ export default function Create() {
   const anchorWallet = useAnchorWallet();
   const { data, isPending, isError } = useCnftDataByOwner();
   const [selectedToken, setSelectedToken] = useState<TokenType>(SOL);
+  console.log("selectedToken", selectedToken);
   const [createState, setCreateState] = useState<CreateStates>(
     CreateStates.Step1
   );

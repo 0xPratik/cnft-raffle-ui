@@ -20,18 +20,21 @@ function TokenSelector({
   setSelectedToken,
 }: TokenSelectorProps) {
   return (
-    <Select>
+    <Select
+      onValueChange={(value) => {
+        const selected = TOKENS.find((token) => token.tokenName === value);
+        if (selected) {
+          setSelectedToken(selected);
+        }
+      }}
+    >
       <SelectTrigger className="w-[180px]">
         <SelectValue placeholder="Select a Token" />
       </SelectTrigger>
       <SelectContent>
         {TOKENS.map((token) => {
           return (
-            <SelectItem
-              key={token.mintAddress}
-              value={token.tokenName}
-              onClick={() => setSelectedToken(token)}
-            >
+            <SelectItem key={token.mintAddress} value={token.tokenName}>
               <div className="flex items-center">
                 <img
                   src={token.tokenImage}
