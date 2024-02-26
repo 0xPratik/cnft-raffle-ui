@@ -209,9 +209,9 @@ export function RaffleCard(props: RaffleCardProps) {
     >
       <Carousel>
         <CarouselContent>
-          {nftQueries.map((nft) => {
+          {nftQueries.map((nft, i) => {
             return (
-              <CarouselItem key={nft.data?.content.links.image}>
+              <CarouselItem key={i}>
                 <img
                   className={clsx(
                     "object-cover w-full",
