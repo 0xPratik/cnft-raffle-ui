@@ -14,7 +14,7 @@ export function Client({ children }: { children: React.ReactNode }) {
           <div className="lg:container">{children}</div>
           <Footer />
         </div>
-        <Toaster position="bottom-left" />
+        <Toaster position="bottom-left" richColors />
       </Providers>
     </div>
   );

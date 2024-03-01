@@ -58,12 +58,12 @@ export function RaffleCard(props: RaffleCardProps) {
   const isRaffleEnded = !!props.endDate && new Date() > props.endDate;
   const isWinnersDeclared = props.assets.every((asset) => asset.randomNo > 0);
   const canWithdraw = isRaffleEnded && isWinnersDeclared;
-  const performTransaction = useTxSigner();
+  const { performTransaction } = useTxSigner();
 
-  console.log("isWinnersDeclared", isWinnersDeclared);
-  console.log("RAFFLECREATOR", props.raffleCreator);
+  // console.log("isWinnersDeclared", isWinnersDeclared);
+  // console.log("RAFFLECREATOR", props.raffleCreator);
 
-  console.log("isRaffleCreator", props.isRaffleCreator);
+  // console.log("isRaffleCreator", props.isRaffleCreator);
 
   useEffect(() => {
     if (props.ticketAccount) {
@@ -92,21 +92,9 @@ export function RaffleCard(props: RaffleCardProps) {
       //   toast.error("Can't declare winner yet");
       //   return;
       // }
-      const cluster =
-        process.env.NEXT_PUBLIC_ENV === "mainnet-beta" ? "mainnet" : "devnet";
+
       const ix = await declareWinnerIx(new anchor.web3.PublicKey(props.raffle));
-      const sig = await performTransaction([ix]);
-      toast.success("Winner Declared");
-      toast("Check on Explorer", {
-        action: {
-          label: "View on Solana Explorer",
-          onClick: () =>
-            window.open(
-              "https://xray.helius.xyz/tx/" + sig + `?cluster=${cluster}`,
-              "_blank"
-            ),
-        },
-      });
+      await performTransaction([ix]);
     } catch (error: any) {
       toast.error(error.message);
       console.log("Catched the Error on handler declareWinnerHandler", error);
@@ -147,20 +135,7 @@ export function RaffleCard(props: RaffleCardProps) {
         isWinner[0].reward.toString(),
         new anchor.web3.PublicKey(props.raffleCreator)
       );
-      const sig = await performTransaction([ix]);
-      const cluster =
-        process.env.NEXT_PUBLIC_ENV === "mainnet-beta" ? "mainnet" : "devnet";
-      toast.success("Claimed Prize successfully");
-      toast("Check on Explorer", {
-        action: {
-          label: "View on Solana Explorer",
-          onClick: () =>
-            window.open(
-              "https://xray.helius.xyz/tx/" + sig + `?cluster=${cluster}`,
-              "_blank"
-            ),
-        },
-      });
+      await performTransaction([ix]);
     } catch (error: any) {
       toast.error(error.message);
       console.log("Claim Prize Error", error);
@@ -178,21 +153,7 @@ export function RaffleCard(props: RaffleCardProps) {
         new anchor.web3.PublicKey(props.ticketMint),
         new anchor.web3.PublicKey(props.raffle)
       );
-      const sig = await performTransaction([ix]);
-      const cluster =
-        process.env.NEXT_PUBLIC_ENV === "mainnet-beta" ? "mainnet" : "devnet";
-      toast.success("Withdraw successfully");
-      toast("Check on Explorer", {
-        action: {
-          label: "View on Solana Explorer",
-          onClick: () =>
-            window.open(
-              "https://xray.helius.xyz/tx/" + sig + `?cluster=${cluster}`,
-              "_blank"
-            ),
-        },
-      });
-      console.log("Finally Sig", sig);
+      await performTransaction([ix]);
     } catch (error: any) {
       console.log("Catched the Error on handler", error);
       toast.error(error.message);
@@ -214,9 +175,10 @@ export function RaffleCard(props: RaffleCardProps) {
               <CarouselItem key={i}>
                 <img
                   className={clsx(
-                    "object-cover w-full",
+                    "object-cover w-full border-b-2",
                     "max-w-full",
                     "height: auto",
+
                     props.raffle !== "" && "cursor-pointer",
                     !props.hideDetails && "rounded-t-lg",
                     props.hideDetails && "rounded-lg",

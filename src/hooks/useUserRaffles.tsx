@@ -13,7 +13,7 @@ export function useUserRaffles() {
     queryKey: ["userRaffles"],
     queryFn: () => getAllUserRaffleAccounts(wallet),
   });
-  console.log("RAFFLES", data);
+
   let userRaffles: RaffleItem[] = [];
   if (isSuccess && data) {
     userRaffles = data.map((raffle) => ({
@@ -24,7 +24,7 @@ export function useUserRaffles() {
         (reward) =>
           reward.reward.toString() !== "11111111111111111111111111111111"
       ),
-      ticketsTotal: 8000,
+      ticketsTotal: raffle.account.maxTickets,
       endDate: new Date(raffle.account.endDate.toNumber() * 1000),
       ticketMint: raffle.account.ticketMint.toString(),
       treasuryAccount: raffle.account.treasuryAccount.toString(),

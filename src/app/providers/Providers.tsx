@@ -5,6 +5,7 @@ import { ReactQueryStreamedHydration } from "@tanstack/react-query-next-experime
 import { ThemeProvider } from "@/components/theme-provider";
 import React from "react";
 import { EnvCluster } from "@/types";
+import WalletNotification from "@/components/Notifications";
 
 const UnifiedWalletProvider = dynamic(
   async () => (await import("@jup-ag/wallet-adapter")).UnifiedWalletProvider,
@@ -55,6 +56,7 @@ export function Providers({ children }: { children: React.ReactNode }) {
           },
           theme: "jupiter",
           lang: "en",
+          notificationCallback: WalletNotification,
         }}
       >
         <QueryClientProvider client={queryClient}>

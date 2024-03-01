@@ -131,7 +131,7 @@ export const createRaffleIx = async (
     }
 
     return {
-      ixs: ix,
+      ix,
     };
   } catch (error) {
     console.log("Something Went Wrong in creating the Raffle", error);

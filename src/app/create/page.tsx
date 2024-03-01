@@ -37,6 +37,7 @@ import RaffleImage from "@/components/ui/RaffleImage";
 import { useQueryClient } from "@tanstack/react-query";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useCnftDataByOwner } from "@/hooks/useCnftDataByOwner";
+import { useTxSigner } from "@/hooks/useTxSigner";
 
 enum CreateStates {
   Step1,
@@ -72,6 +73,7 @@ export default function Create() {
     treasuryAccount: "",
     raffle: "",
   });
+  const { performTransaction, processing } = useTxSigner();
 
   const validateSteps = (step: 1 | 2 | 3): boolean => {
     if (step === 1) {
@@ -99,13 +101,9 @@ export default function Create() {
         alert("Please select a end date");
         return;
       }
+      const inxs: anchor.web3.TransactionInstruction[] = [];
+      const additionInxs: anchor.web3.TransactionInstruction[] = [];
 
-      const connection = new anchor.web3.Connection(RPC);
-      const { blockhash } = await connection.getLatestBlockhash();
-      const transaction = new anchor.web3.Transaction({
-        recentBlockhash: blockhash,
-        feePayer: anchorWallet.publicKey,
-      });
       if (!raffler) {
         console.log("Raffler is null", raffler);
         const ix = await createRafflerIx(anchorWallet as NodeWallet);
@@ -113,7 +111,7 @@ export default function Create() {
           console.log("Ix is Null");
           return;
         }
-        transaction.add(ix);
+        inxs.push(ix);
       }
       const unixTimeStamp = getUnixTimeStamp(enddate.getTime());
       const ticketMint = new anchor.web3.PublicKey(selectedToken.mintAddress);
@@ -133,7 +131,7 @@ export default function Create() {
         throw new Error("Failed to create Raffle Instruction");
       }
 
-      transaction.add(raffleIx.ixs);
+      inxs.push(raffleIx.ix);
       console.log("selectedTokens", selectedTokens);
       const rewardIxs = await Promise.all(
         selectedTokens.map((token) =>
@@ -144,7 +142,7 @@ export default function Create() {
           )
         )
       );
-      console.log("rewardIxs", rewardIxs);
+
       if (!rewardIxs) {
         throw new Error("Failed to create Reward Instruction");
       }
@@ -152,28 +150,19 @@ export default function Create() {
       if (rewardIxs) {
         rewardIxs.forEach((ix) => {
           if (ix !== undefined) {
-            transaction.add(ix);
+            inxs.push(ix);
           }
         });
       }
-      console.log("transaction", transaction);
-      const signedTx = await anchorWallet.signTransaction(transaction, {
-        skipPreflight: true,
-      });
-      const sig = await connection.sendRawTransaction(signedTx.serialize());
-      toast.success("Raffle created successfully");
-      toast("Check on Explorer", {
-        action: {
-          label: "View on Solana Explorer",
-          onClick: () =>
-            window.open(
-              "https://explorer.solana.com/tx/" + sig + "?cluster=devnet",
-              "_blank"
-            ),
-        },
-      });
-      await queryClient.invalidateQueries({ queryKey: ["raffleListing"] });
-      router.push("/");
+      console.log("inxs", JSON.stringify(inxs));
+      const txSigs = await performTransaction(inxs);
+
+      console.log("txSigs", txSigs);
+
+      if (txSigs?.length !== 0 && txSigs !== undefined) {
+        await queryClient.invalidateQueries({ queryKey: ["raffleListing"] });
+        router.push("/");
+      }
     } catch (error: any) {
       console.log("Catched the Error on handler", error);
       toast.error(error.message);

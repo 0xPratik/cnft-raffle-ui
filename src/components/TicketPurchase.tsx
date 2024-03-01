@@ -28,7 +28,7 @@ export const TicketPurchase = (props: TicketPurchaseProps) => {
   const [ticketPurchaseState, setTicketPurchaseState] =
     useState<TicketPurchaseStates>(TicketPurchaseStates.Default);
 
-  const performTransaction = useTxSigner();
+  const { performTransaction } = useTxSigner();
   let useAnchorWallet;
   if (typeof window !== "undefined") {
     ({ useAnchorWallet } = require("@jup-ag/wallet-adapter"));

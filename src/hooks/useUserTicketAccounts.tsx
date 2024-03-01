@@ -29,7 +29,7 @@ const getRaffleFromTicketAccounts = async (wallet: Wallet) => {
               (reward) =>
                 reward.reward.toString() !== "11111111111111111111111111111111"
             ),
-            ticketsTotal: 8000,
+            ticketsTotal: raffle.maxTickets,
             endDate: new Date(raffle.endDate.toNumber() * 1000),
             ticketMint: raffle.ticketMint.toString(),
             treasuryAccount: raffle.treasuryAccount.toString(),

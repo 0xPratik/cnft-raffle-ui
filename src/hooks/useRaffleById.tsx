@@ -17,7 +17,7 @@ export function useRaffleById(raffleId: string) {
         (reward) =>
           reward.reward.toString() !== "11111111111111111111111111111111"
       ),
-      ticketsTotal: 8000,
+      ticketsTotal: data.maxTickets,
       endDate: new Date(data.endDate.toNumber() * 1000),
       ticketMint: data.ticketMint?.toString(),
       treasuryAccount: data.treasuryAccount?.toString(),
