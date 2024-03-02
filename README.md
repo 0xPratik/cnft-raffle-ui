@@ -8,8 +8,5 @@ Tombola is one part protocol and one part open source front end: The protocol is
 > one such example could be to use it with solarplex frames
 
 
-# Video
-
-(https://i.ytimg.com/vi/Hc79sDi3f0U/maxresdefault.jpg)] // Thumbnail
-(https://www.youtube.com/watch?v=Hc79sDi3f0U "Now in Android: 55") 
+# Video Demo here [Link](https://youtu.be/O5iaA8EqUCg?feature=shared)
 
