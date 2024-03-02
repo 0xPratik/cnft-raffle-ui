@@ -1,7 +1,21 @@
 import { useQuery } from "@tanstack/react-query";
-import { RPC } from "@/lib/constants";
+
 import axios from "axios";
 import { Item, NFTResponse } from "@/types";
+import { envClientSchema } from "@/lib/constants";
+
+const verifiedCollections = [
+  "DRiP2Pn2K6fuMLKQmt5rZWyHiUZ6WK3GChEySUpHSS4x",
+  "DGPTxgKaBPJv3Ng7dc9AFDpX6E7kgUMZEgyTm3VGWPW6",
+  "DPNTcMcvRs4XJVgKzKBqS3Tg6tRbEWyqJ6jgef5HkBxC",
+  "DAA1jBEYj2w4DgMRDVaXg5CWfjmTry5t8VEvLJQ9R8PY",
+  "DRDRb6qsokfYm6VDGRzqsiyLRFq1Ge2jMSN6BD8tu2Js",
+  "5mZC22cd88VDpRUAPs1BFZ21Q1g9zG3LR2JPs1AAaNZQ",
+  "HVA9YquXsrhWVFBie1pWzWd5FCD7Td6K536yZrNZx3y",
+  "CDm8nCyPCqCpD7XxWwt7iUHH6N88aFTjPADRazZ6zBA2",
+  "7soPY36PaM8Ck1EycPq5WJ3CVHjZK47aneFniK5GNFyQ",
+  "6BCofUHZbggNRoVLSRU4Yogswhxg9DoyEZRGrUjyfY3j",
+];
 
 export function useCnftDataByOwner() {
   let useAnchorWallet;
@@ -24,7 +38,7 @@ async function getCnftDataByOwner(walletAddress: string | undefined) {
   }
 
   try {
-    const res = await axios.post(RPC, {
+    const res = await axios.post(envClientSchema.NEXT_PUBLIC_RPC, {
       jsonrpc: "2.0",
       id: "my-id",
       method: "getAssetsByOwner",
@@ -36,14 +50,25 @@ async function getCnftDataByOwner(walletAddress: string | undefined) {
     });
 
     const data = res.data as NFTResponse;
-    const dataWithoutcnfts = data.result.items.filter(
+    const dataWithCnfts = data.result.items.filter(
       (item) =>
         item.compression.compressed === true &&
         item.ownership.frozen === false &&
         item.ownership.delegated === false
     );
 
-    return dataWithoutcnfts as Item[];
+    const verifiedCollectionCnfts = dataWithCnfts.filter((item) =>
+      item.grouping.find(
+        (group) =>
+          group.group_key === "collection" &&
+          verifiedCollections.includes(group.group_value)
+      )
+    );
+
+    if (envClientSchema.NEXT_PUBLIC_ENV === "mainnet-beta") {
+      return verifiedCollectionCnfts as Item[];
+    }
+    return dataWithCnfts as Item[];
   } catch (error) {
     throw new Error("Something went wrong with NFT fetch request");
   }

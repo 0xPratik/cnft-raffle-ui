@@ -1,14 +1,12 @@
 import * as anchor from "@coral-xyz/anchor";
 
-import { CheckCircleIcon, CheckIcon, TicketIcon } from "lucide-react";
-import { Toaster, toast } from "sonner";
+import { CheckCircleIcon, TicketIcon } from "lucide-react";
+import { toast } from "sonner";
 
-import { Connection } from "@solana/web3.js";
 import NodeWallet from "@coral-xyz/anchor/dist/cjs/nodewallet";
 import type { RaffleCardInterface } from "../types";
 import { buyTicketIx } from "../lib/program/instructions";
 import clsx from "clsx";
-import { RPC } from "@/lib/constants";
 import { useState } from "react";
 import { useTxSigner } from "@/hooks/useTxSigner";
 
@@ -65,19 +63,9 @@ export const TicketPurchase = (props: TicketPurchaseProps) => {
 
       const sig = await performTransaction(ix);
       console.log("Ticket Purchase", sig);
-      toast.success(`Ticket Purchase Confirmed!`);
+
       const cluster =
         process.env.NEXT_PUBLIC_ENV === "mainnet-beta" ? "mainnet" : "devnet";
-      toast("Check on Explorer", {
-        action: {
-          label: "View on Solana Explorer",
-          onClick: () =>
-            window.open(
-              "https://xray.helius.xyz/tx/" + sig + `?cluster=${cluster}`,
-              "_blank"
-            ),
-        },
-      });
     } catch (error: any) {
       console.log("Catched the Error on handler", error);
       toast.error(error.message);

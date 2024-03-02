@@ -1,5 +1,5 @@
 import * as anchor from "@coral-xyz/anchor";
-import { RPC } from "../constants";
+
 import { degenProgram } from ".";
 import { findRafflePDA, findRafflerPDA, findTicketPDA } from "./pdas";
 import {
@@ -23,11 +23,12 @@ import {
   SPL_NOOP_PROGRAM_ID,
 } from "@solana/spl-account-compression";
 import { toWeb3JsPublicKey } from "@metaplex-foundation/umi-web3js-adapters";
+import { envClientSchema } from "../constants";
 
 export const declareWinnerIx = async (raffle: anchor.web3.PublicKey) => {
   try {
     anchor.setProvider({
-      connection: new anchor.web3.Connection(RPC),
+      connection: new anchor.web3.Connection(envClientSchema.NEXT_PUBLIC_RPC),
     });
     const provider = anchor.getProvider() as anchor.AnchorProvider;
     const program = await degenProgram(provider);
@@ -50,7 +51,7 @@ export const declareWinnerIx = async (raffle: anchor.web3.PublicKey) => {
 export const createRafflerIx = async (wallet: anchor.Wallet) => {
   try {
     anchor.setProvider({
-      connection: new anchor.web3.Connection(RPC),
+      connection: new anchor.web3.Connection(envClientSchema.NEXT_PUBLIC_RPC),
     });
     const provider = anchor.getProvider() as anchor.AnchorProvider;
     const program = await degenProgram(provider);
@@ -84,7 +85,7 @@ export const createRaffleIx = async (
 ) => {
   try {
     anchor.setProvider({
-      connection: new anchor.web3.Connection(RPC),
+      connection: new anchor.web3.Connection(envClientSchema.NEXT_PUBLIC_RPC),
     });
     const provider = anchor.getProvider() as anchor.AnchorProvider;
     const program = await degenProgram(provider);
@@ -155,7 +156,7 @@ export const addRewardIx = async (
 ) => {
   try {
     anchor.setProvider({
-      connection: new anchor.web3.Connection(RPC),
+      connection: new anchor.web3.Connection(envClientSchema.NEXT_PUBLIC_RPC),
     });
     const provider = anchor.getProvider() as anchor.AnchorProvider;
     const program = await degenProgram(provider);
@@ -171,11 +172,10 @@ export const addRewardIx = async (
     }
     const treeAuthority = getTreeAuthority(treeAddress);
     const [rafflePDAPubkey] = await findRafflePDA(wallet.publicKey, idx);
-    const asset = await getAsset(assetId, RPC);
+    const asset = await getAsset(assetId, envClientSchema.NEXT_PUBLIC_RPC);
     console.log("asset", asset);
-    console.log("RPC", RPC);
 
-    const proof = await getAssetProof(assetId, RPC);
+    const proof = await getAssetProof(assetId, envClientSchema.NEXT_PUBLIC_RPC);
     console.log("proof", proof);
     const root = decode(proof.root);
     const dataHash = decode(asset.compression.data_hash);
@@ -217,7 +217,7 @@ export const buyTicketIx = async (
     console.log("ticketMint", ticketMint.toString(), NATIVE_MINT.toString());
 
     anchor.setProvider({
-      connection: new anchor.web3.Connection(RPC),
+      connection: new anchor.web3.Connection(envClientSchema.NEXT_PUBLIC_RPC),
     });
     const provider = anchor.getProvider() as anchor.AnchorProvider;
     const program = await degenProgram(provider);
@@ -272,7 +272,7 @@ export const buyTicketIx = async (
       );
       const sync = createSyncNativeInstruction(buyerAta);
       console.log("SENDING THIS");
-      return [createATA, nativeIx, sync, ix];
+      return [createATA, nativeIx, ix, closeATA];
     }
     console.log("RETURNING THIS");
     return [ix];
@@ -288,7 +288,7 @@ export const raffleWithdrawIx = async (
   raffleAccount: anchor.web3.PublicKey
 ) => {
   anchor.setProvider({
-    connection: new anchor.web3.Connection(RPC),
+    connection: new anchor.web3.Connection(envClientSchema.NEXT_PUBLIC_RPC),
   });
   const provider = anchor.getProvider() as anchor.AnchorProvider;
   const program = await degenProgram(provider);
@@ -343,15 +343,15 @@ export const claimPrizeIx = async (
   raffleCreator: anchor.web3.PublicKey
 ) => {
   anchor.setProvider({
-    connection: new anchor.web3.Connection(RPC),
+    connection: new anchor.web3.Connection(envClientSchema.NEXT_PUBLIC_RPC),
   });
   const provider = anchor.getProvider() as anchor.AnchorProvider;
   const program = await degenProgram(provider);
   const [rafflerAccount] = await findRafflerPDA(raffleCreator);
   const [ticketPDA] = await findTicketPDA(wallet.publicKey, raffleAccount);
 
-  const asset = await getAsset(assetId, RPC);
-  const proof = await getAssetProof(assetId, RPC);
+  const asset = await getAsset(assetId, envClientSchema.NEXT_PUBLIC_RPC);
+  const proof = await getAssetProof(assetId, envClientSchema.NEXT_PUBLIC_RPC);
   const root = decode(proof.root);
   const dataHash = decode(asset.compression.data_hash);
   const creatorHash = decode(asset.compression.creator_hash);

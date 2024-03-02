@@ -45,7 +45,8 @@
     "react-dom": "^18",
     "sonner": "^1.2.4",
     "tailwind-merge": "^2.1.0",
-    "tailwindcss-animate": "^1.0.7"
+    "tailwindcss-animate": "^1.0.7",
+    "zod": "^3.22.4"
   },
   "devDependencies": {
     "@tanstack/eslint-plugin-query": "^5.12.1",

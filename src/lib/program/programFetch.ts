@@ -11,11 +11,11 @@ import {
   TOKEN_PROGRAM_ID,
   getAssociatedTokenAddress,
 } from "@solana/spl-token";
-import { RPC } from "../constants";
+import { envClientSchema } from "../constants";
 
 export const getRaffleFromPDA = async (rafflePDA: string) => {
   anchor.setProvider({
-    connection: new anchor.web3.Connection(RPC),
+    connection: new anchor.web3.Connection(envClientSchema.NEXT_PUBLIC_RPC),
   });
   const provider = anchor.getProvider() as anchor.AnchorProvider;
   const program = await degenProgram(provider);
@@ -33,7 +33,7 @@ export const getRaffleFromPDA = async (rafflePDA: string) => {
 
 export const getRaffler = async (wallet: anchor.Wallet) => {
   anchor.setProvider({
-    connection: new anchor.web3.Connection(RPC),
+    connection: new anchor.web3.Connection(envClientSchema.NEXT_PUBLIC_RPC),
   });
   const provider = anchor.getProvider() as anchor.AnchorProvider;
   const [rafflerPDA] = await findRafflerPDA(wallet.publicKey);
@@ -47,7 +47,7 @@ export const getRaffler = async (wallet: anchor.Wallet) => {
 
 export const getRaffle = async (wallet: anchor.Wallet, idx: number) => {
   anchor.setProvider({
-    connection: new anchor.web3.Connection(RPC),
+    connection: new anchor.web3.Connection(envClientSchema.NEXT_PUBLIC_RPC),
   });
   const provider = anchor.getProvider() as anchor.AnchorProvider;
   const [rafflePDA] = await findRafflePDA(wallet.publicKey, idx);
@@ -58,7 +58,7 @@ export const getRaffle = async (wallet: anchor.Wallet, idx: number) => {
 
 export const getAllTicketsForRaffle = async (raffle: anchor.web3.PublicKey) => {
   anchor.setProvider({
-    connection: new anchor.web3.Connection(RPC),
+    connection: new anchor.web3.Connection(envClientSchema.NEXT_PUBLIC_RPC),
   });
   const provider = anchor.getProvider() as anchor.AnchorProvider;
   const program = await degenProgram(provider);
@@ -82,7 +82,7 @@ export const getAllTicketsForRaffle = async (raffle: anchor.web3.PublicKey) => {
 
 export const getAllRaffleAccounts = async () => {
   anchor.setProvider({
-    connection: new anchor.web3.Connection(RPC),
+    connection: new anchor.web3.Connection(envClientSchema.NEXT_PUBLIC_RPC),
   });
   const provider = anchor.getProvider() as anchor.AnchorProvider;
   const program = await degenProgram(provider);
@@ -99,7 +99,7 @@ export const getAllUserRaffleAccounts = async (wallet: anchor.Wallet) => {
 
   try {
     anchor.setProvider({
-      connection: new anchor.web3.Connection(RPC),
+      connection: new anchor.web3.Connection(envClientSchema.NEXT_PUBLIC_RPC),
     });
     const provider = anchor.getProvider() as anchor.AnchorProvider;
     const program = await degenProgram(provider);
@@ -120,7 +120,7 @@ export const getAllUserRaffleAccounts = async (wallet: anchor.Wallet) => {
 
 export const getAllTicketAccounts = async () => {
   anchor.setProvider({
-    connection: new anchor.web3.Connection(RPC),
+    connection: new anchor.web3.Connection(envClientSchema.NEXT_PUBLIC_RPC),
   });
   const provider = anchor.getProvider() as anchor.AnchorProvider;
   const program = await degenProgram(provider);
@@ -137,7 +137,7 @@ export const getAllTicketsForUser = async (wallet: anchor.Wallet) => {
 
   try {
     anchor.setProvider({
-      connection: new anchor.web3.Connection(RPC),
+      connection: new anchor.web3.Connection(envClientSchema.NEXT_PUBLIC_RPC),
     });
     const provider = anchor.getProvider() as anchor.AnchorProvider;
     const program = await degenProgram(provider);
@@ -162,7 +162,7 @@ export const getTicket = async (
 ) => {
   const [ticketPDA] = await findTicketPDA(wallet.publicKey, raffleAccount);
   anchor.setProvider({
-    connection: new anchor.web3.Connection(RPC),
+    connection: new anchor.web3.Connection(envClientSchema.NEXT_PUBLIC_RPC),
   });
   const provider = anchor.getProvider() as anchor.AnchorProvider;
   const program = await degenProgram(provider);

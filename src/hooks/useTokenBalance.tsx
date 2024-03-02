@@ -1,4 +1,4 @@
-import { RPC } from "@/lib/constants";
+import { envClientSchema } from "@/lib/constants";
 import * as anchor from "@coral-xyz/anchor";
 import { useQuery } from "@tanstack/react-query";
 
@@ -13,7 +13,9 @@ export const useTokenBalance = (tokenAccount: string) => {
 
 export const getTokenBalance = async (tokenAccount: string) => {
   try {
-    const connection = new anchor.web3.Connection(RPC);
+    const connection = new anchor.web3.Connection(
+      envClientSchema.NEXT_PUBLIC_RPC
+    );
     const tokenAccountPubkey = new anchor.web3.PublicKey(tokenAccount);
     const tokenAccountBalances = await connection.getTokenAccountBalance(
       tokenAccountPubkey

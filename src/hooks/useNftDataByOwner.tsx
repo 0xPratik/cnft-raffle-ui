@@ -1,7 +1,8 @@
 import { useQuery } from "@tanstack/react-query";
-import { RPC } from "@/lib/constants";
+
 import axios from "axios";
 import { Item, NFTResponse } from "@/types";
+import { envClientSchema } from "@/lib/constants";
 
 export function useNftDataByOwner() {
   let useAnchorWallet;
@@ -24,7 +25,7 @@ async function getNftDataByOwner(walletAddress: string | undefined) {
   }
 
   try {
-    const res = await axios.post(RPC, {
+    const res = await axios.post(envClientSchema.NEXT_PUBLIC_RPC, {
       jsonrpc: "2.0",
       id: "my-id",
       method: "getAssetsByOwner",

@@ -5,7 +5,6 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import * as anchor from "@coral-xyz/anchor";
-import { RPC } from "@/lib/constants";
 import NodeWallet from "@coral-xyz/anchor/dist/cjs/nodewallet";
 import {
   addRewardIx,
@@ -123,7 +122,7 @@ export default function Create() {
         new anchor.BN(unixTimeStamp),
         new anchor.BN(price),
         // keeping this as 100 to fix the error but will need to get this from the user
-        new anchor.BN(100),
+        new anchor.BN(8000),
         ticketMint
       );
 

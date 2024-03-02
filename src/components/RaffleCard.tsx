@@ -17,7 +17,7 @@ import {
   declareWinnerIx,
   raffleWithdrawIx,
 } from "@/lib/program/instructions";
-import { RPC } from "@/lib/constants";
+
 import { BitArray } from "@/lib/program/bitArray";
 import { useTokenBalance } from "@/hooks/useTokenBalance";
 import { useEffect, useState } from "react";
@@ -200,15 +200,21 @@ export function RaffleCard(props: RaffleCardProps) {
                     </header>
                     <ul className="mb-4 text-sm">
                       <li>
-                        <strong className="font-semibold">Tickets price</strong>
-                        : {uiPrice}{" "}
-                        <span className="font-bold">{token?.tokenName}</span>
+                        <strong className="text-gray-600">Tickets price</strong>
+                        :
+                        <span className="font-semibold">
+                          {" "}
+                          {uiPrice} {token?.tokenName}
+                        </span>
                       </li>
                       <li>
-                        <strong className="font-semibold">
+                        <strong className=" text-gray-600">
                           Tickets Remaining
                         </strong>
-                        : {props.ticketsTotal - props.soldTickets}
+                        :{" "}
+                        <span className="font-semibold">
+                          {props.ticketsTotal - props.soldTickets}
+                        </span>
                       </li>
                       {props.ticketAccount &&
                         props.ticketAccount.account.tickets.amount > 0 && (

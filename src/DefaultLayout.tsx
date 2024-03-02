@@ -9,9 +9,11 @@ export function Client({ children }: { children: React.ReactNode }) {
   return (
     <div className="w-screen h-screen ">
       <Providers>
-        <div className="flex-col">
+        <div className="flex flex-col w-full min-h-full">
           <Header />
-          <div className="lg:container">{children}</div>
+          <div className="w-full h-full  pt-8 pb-12 mx-auto lg:container">
+            {children}
+          </div>
           <Footer />
         </div>
         <Toaster position="bottom-left" richColors />

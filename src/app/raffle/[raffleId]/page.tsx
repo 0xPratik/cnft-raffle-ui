@@ -145,10 +145,10 @@ export default function Page({ params }: { params: { raffleId: string } }) {
                               className="m-0 border-t p-0 even:bg-muted"
                             >
                               <td className="border px-4 py-2 text-left [&[align=center]]:text-center [&[align=right]]:text-right">
-                                {ticket.account.authority.toString()}
+                                {ticket.account?.authority?.toString()}
                               </td>
                               <td className="border px-4 py-2 text-left [&[align=center]]:text-center [&[align=right]]:text-right">
-                                {ticket.account.tickets.amount}
+                                {ticket.account?.tickets?.amount}
                               </td>
                             </tr>
                           );

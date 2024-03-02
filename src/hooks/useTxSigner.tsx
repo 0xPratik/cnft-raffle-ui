@@ -1,9 +1,9 @@
 import { TransactionInstruction } from "@solana/web3.js";
 import * as anchor from "@coral-xyz/anchor";
 import { useEffect, useState } from "react";
-import { RPC } from "@/lib/constants";
 import { AnchorWallet } from "@jup-ag/wallet-adapter";
 import { toast } from "sonner";
+import { envClientSchema } from "@/lib/constants";
 
 export function useTxSigner() {
   let useAnchorWallet;
@@ -15,7 +15,9 @@ export function useTxSigner() {
 
   const createTransaction = async (inxs: TransactionInstruction[]) => {
     try {
-      const connection = new anchor.web3.Connection(RPC);
+      const connection = new anchor.web3.Connection(
+        envClientSchema.NEXT_PUBLIC_RPC
+      );
       const { blockhash } = await connection.getLatestBlockhash();
       const transaction = new anchor.web3.Transaction({
         recentBlockhash: blockhash,
@@ -43,7 +45,9 @@ export function useTxSigner() {
 
     try {
       setProcessing(true);
-      const connection = new anchor.web3.Connection(RPC);
+      const connection = new anchor.web3.Connection(
+        envClientSchema.NEXT_PUBLIC_RPC
+      );
       const transactions: anchor.web3.Transaction[] = [];
       console.log("inxs", inxs.length);
 
@@ -71,10 +75,9 @@ export function useTxSigner() {
       if (transactions.length > 1) {
         signedTxs = await wallet.signAllTransactions(transactions);
       } else if (transactions.length === 1) {
-        console.log("IN HERE");
         signedTxs = [await wallet.signTransaction(transactions[0])];
       }
-      console.log("SIGNED", signedTxs);
+
       for (const signedTx of signedTxs) {
         const sig = await connection.sendRawTransaction(signedTx.serialize(), {
           skipPreflight: true,
@@ -85,7 +88,7 @@ export function useTxSigner() {
         console.log("SIGN", sig);
         const res = await connection.confirmTransaction(sig, "confirmed");
         console.log("RES", res.context, res.value.err);
-        toast.success("Transaction Confirmed!");
+        // toast.success("Transaction Confirmed!");
         toast("Check on Explorer", {
           action: {
             label: "View on Explorer",

@@ -23,13 +23,18 @@ export interface RaffleCardInterface extends RaffleItem {
   favorited?: boolean;
 }
 
+type Grouping = {
+  group_key: string;
+  group_value: string;
+};
+
 export type Item = {
   interface: string;
   id: string;
   content: Content;
   authorities: Authority[];
   compression: Compression;
-  grouping: any[];
+  grouping: Grouping[];
   royalty: Royalty;
   creators: Creator[];
   ownership: Ownership;

@@ -1,5 +1,5 @@
 import { useQueries } from "@tanstack/react-query";
-import { RPC } from "@/lib/constants";
+import { envClientSchema } from "@/lib/constants";
 import axios from "axios";
 import { GetAssetType } from "@/types";
 
@@ -22,7 +22,7 @@ export function useNftDataByMint({ mint }: UseNftDataByMintParams) {
 
 export const getNftFromMint = async (mint: string) => {
   try {
-    const res = await axios.post(RPC, {
+    const res = await axios.post(envClientSchema.NEXT_PUBLIC_RPC, {
       jsonrpc: "2.0",
       id: "my-id",
       method: "getAsset",
