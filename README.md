@@ -10,4 +10,6 @@ Tombola is one part protocol and one part open source front end: The protocol is
 
 # Video
 
-https://youtu.be/O5iaA8EqUCg
+(https://i.ytimg.com/vi/Hc79sDi3f0U/maxresdefault.jpg)] // Thumbnail
+(https://www.youtube.com/watch?v=Hc79sDi3f0U "Now in Android: 55") 
+
