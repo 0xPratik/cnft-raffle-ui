@@ -8,7 +8,7 @@ export function useUserRaffles() {
     ({ useAnchorWallet } = require("@jup-ag/wallet-adapter"));
   }
   const wallet = useAnchorWallet();
-  console.log("wallet", wallet?.publicKey.toString());
+
   const { data, isSuccess, isError, isPending, error, status } = useQuery({
     queryKey: ["userRaffles"],
     queryFn: () => getAllUserRaffleAccounts(wallet),

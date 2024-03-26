@@ -94,7 +94,7 @@ export function useTxSigner() {
             label: "View on Explorer",
             onClick: () =>
               window.open(
-                "https://xray.helius.xyz/tx/" + sig + `?cluster=${cluster}`,
+                "https://explorer.solana.com/tx/" + sig + `?cluster=${cluster}`,
                 "_blank"
               ),
           },

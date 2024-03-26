@@ -2,7 +2,7 @@ import { AnchorProvider, Idl, IdlTypes, Program } from "@coral-xyz/anchor";
 import { CnftRaffle, IDL } from "./program";
 import * as anchor from "@coral-xyz/anchor";
 
-export const programID = "21VexLHn3EtK5s67Ws4pDbXLtkQ4afmPjBxFX1ja7gf8";
+export const programID = "B4QMq37WjSpSR4zHUz8Rgys5ra9Y5navh4ERjivwS8KP";
 export const programIDPubkey = new anchor.web3.PublicKey(programID);
 
 export const errorMessages = [

@@ -56,15 +56,20 @@ async function getCnftDataByOwner(walletAddress: string | undefined) {
         item.ownership.frozen === false &&
         item.ownership.delegated === false
     );
+    console.log("dataWithCnfts", dataWithCnfts);
+    const verifiedCollectionCnfts = dataWithCnfts.filter((item) => {
+      console.log("metadata", item.content.metadata.name);
 
-    const verifiedCollectionCnfts = dataWithCnfts.filter((item) =>
-      item.grouping.find(
+      return item.grouping.find(
         (group) =>
           group.group_key === "collection" &&
           verifiedCollections.includes(group.group_value)
-      )
-    );
-
+      );
+    });
+    // console.log("verifiedCollectionCnfts", verifiedCollectionCnfts);
+    verifiedCollectionCnfts.forEach((item) => {
+      console.log("verifiedItems", item.content.metadata.name);
+    });
     if (envClientSchema.NEXT_PUBLIC_ENV === "mainnet-beta") {
       return verifiedCollectionCnfts as Item[];
     }

@@ -39,7 +39,7 @@ export const USDC: TokenType = {
     "https://jup.ag/_next/image?url=https%3A%2F%2Fraw.githubusercontent.com%2Fsolana-labs%2Ftoken-list%2Fmain%2Fassets%2Fmainnet%2FEPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v%2Flogo.png&w=64&q=75",
 };
 
-export const TOKENS: TokenType[] = [SOL, USDC];
+export const TOKENS: TokenType[] = [USDC];
 
 export function searchTokenByMintAddress(mintAddress: string) {
   return TOKENS.find((token) => token.mintAddress === mintAddress);

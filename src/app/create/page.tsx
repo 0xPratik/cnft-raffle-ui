@@ -284,15 +284,20 @@ export default function Create() {
               )}
               {data &&
                 data.map((item, index) => {
+                  if (!item.content.links.image) {
+                    return null;
+                  }
+
                   return (
                     <div
                       key={index}
                       onClick={() => {
                         if (selectedTokens.includes(item)) {
                           const selTokens = selectedTokens;
-                          console.log("selTokens", selTokens);
+
                           selTokens.splice(selTokens.indexOf(item), 1);
                           setSelectedTokens([...selTokens]);
+
                           // setRaffleData({
                           //   ...raffleData,
                           //   assets: raffleData.assets.filter(
@@ -301,6 +306,7 @@ export default function Create() {
                           // });
                         } else {
                           setSelectedTokens([...selectedTokens, item]);
+
                           // setRaffleData({
                           //   ...raffleData,
                           //   assets: [
